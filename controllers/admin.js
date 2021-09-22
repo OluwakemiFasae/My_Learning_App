@@ -1,8 +1,10 @@
 require('dotenv').config();
-
+const bcrypt = require('bcrypt');
 const Admin = require('../models').Admin;
 
 
+
+const saltRounds = 10;
 
 export default class AdminController {
     async createAccount(request, response) {
@@ -49,12 +51,13 @@ export default class AdminController {
           })
           .then((admin) => {
             if (!admin) {
+                bcrypt.hash(request.body.password, saltRounds, (err, hash) => {
                   return Admin
                     .create({
                       firstname: request.body.firstname,
                       lastname: request.body.lastname,
                       email: request.body.email,
-                      password: request.body.password,
+                      password: hash,
                       companyId: request.body.companyId
                     })
                     .then((newAdmin) => {
@@ -68,6 +71,7 @@ export default class AdminController {
                       status: 'Success',
                       error: error.toString(),
                     }));
+                })
               }  else {
               return response.status(400).send({
                 status: 'Found',
