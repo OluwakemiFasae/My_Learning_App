@@ -1,6 +1,8 @@
-const express = require('express')
-const logger = require('morgan');
-const bodyParser = require('body-parser');
+import express from 'express';
+import logger from 'morgan';
+
+
+import adminRoute from './routes/admin';
 
 
 //setup the express app
@@ -18,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
+
+adminRoute(app);
 
 app.get('/', (req, res) => 
     res.status(200).send({ message: 'Home Page' }))
