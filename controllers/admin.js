@@ -81,4 +81,5 @@ export default class AdminController {
           })
           .catch(error => response.status(500).send(error.toString()));
       }
+
 }
