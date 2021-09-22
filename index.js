@@ -1,12 +1,14 @@
 import express from 'express';
 import logger from 'morgan';
 
+require('dotenv').config()
 
 import adminRoute from './routes/admin';
 
 
 //setup the express app
 const app = express()
+
 
 
 // Log requests to the console.

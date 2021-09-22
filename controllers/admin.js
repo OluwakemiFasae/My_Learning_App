@@ -1,8 +1,46 @@
+require('dotenv').config();
+
 const Admin = require('../models').Admin;
 
+
+
 export default class AdminController {
-    static createAccount(request, response) {
-        console.log(request.body)
+    async createAccount(request, response) {
+         
+            // const existingAdmin = await Admin.findOne({
+            //     where: {
+            //     email: request.body.email,
+            //     }}).catch(error => response.send({
+            //         status: 'Success',
+            //         error: error.toString(),
+            //       }));
+            // if(!existingAdmin){
+            //     const newAdmin = await Admin
+            //         .create({
+            //           firstname: request.body.firstname,
+            //           lastname: request.body.lastname,
+            //           email: request.body.email,
+            //           password: request.body.password,
+            //           companyId: request.body.companyId
+            //         }).catch(error => response.send({
+            //             status: 'Success',
+            //             error: error.toString(),
+            //           }));
+            
+            //     delete newAdmin.dataValues.password;
+            //     return response.status(201).send({
+            //         status: 'Successful',
+            //         data: newAdmin,
+            //     })
+                
+                            
+            // }else{
+            //     return response.status(400).send({
+            //         status: 'Found',
+            //         message: 'User already exists!'
+            //   });
+            // }
+        
         Admin
           .findOne({
             where: {
@@ -40,4 +78,3 @@ export default class AdminController {
           .catch(error => response.status(500).send(error.toString()));
       }
 }
-
