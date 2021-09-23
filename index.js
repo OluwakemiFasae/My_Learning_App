@@ -5,7 +5,10 @@ import cookieSession from 'cookie-session';
 
 
 import './services/passport'
+import './models/Admin'
 import adminRoute from './routes/admin';
+
+//const cookieSession = require('cookie-session');
 
 
 require('dotenv').config()
@@ -15,31 +18,37 @@ require('dotenv').config()
 //setup the express app
 const app = express()
 
-
-
-// Log requests to the console.
-app.use(logger('dev'));
-
-
-app.use(
-  cookieSession({
-      maxAge: 30*24*60*60*1000,
-      keys: [process.env.cookieKey]
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-//define port to run the server
-const port = 5000
+app.use(cookieSession({
+  name: 'google-auth-session',
+  keys: ['key1', 'key2']
+}))
 
 // Parse incoming requests data -former function of body-parser
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
+
+// Log requests to the console.
+app.use(logger('dev'));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// app.use(
+//   cookieSession({
+//       maxAge: 30*24*60*60*1000,
+//       keys: ['cats']
+//   })
+// );
+
+
+
+
+//define port to run the server
+const port = 5000
+
+
 
 adminRoute(app);
 

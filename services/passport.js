@@ -8,13 +8,16 @@ passport.serializeUser((user, done) =>{
     done(null, user.id);
 });
 
+// passport.deserializeUser((user, done) => {
+//     done(null,user);   
+// })
+
 passport.deserializeUser((id, done) =>{
     Admin.findByPk(id)
         .then((user) => {
-            done(null,user);
+            done(null,user.dataValues);
     })
 });
-
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -22,7 +25,7 @@ passport.use(new GoogleStrategy({
     callbackURL: 'http://localhost:5000/auth/google/callback',
     proxy: true
 }, async (accessToken, refreshToken, profile, done) => {
-    console.log(profile.emails[0].value)
+    
     const existingUser = await Admin.findOne({ where: { email: profile.emails[0].value} })
     //.then(existingUser => {
         if(existingUser){
