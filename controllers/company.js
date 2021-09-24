@@ -23,52 +23,40 @@ const updateRules = {
     country: 'required'
 }
 export default class CompanyController {
-    createAccount(request, response) {
-        Company
-            .findOne({
-                where: {
-                    email: request.body.companyEmail,
-                },
-            })
-            .then((company) => {
-                if (!company) {
-                    let validate = new Validator(request.body, companyRules);
-
-                    if (validate.passes()) {
-                        bcrypt.hash(request.body.password, saltRounds, (err, hash) => {
-                            return Company
-                                .create({
-                                    companyName: request.body.companyName,
-                                    email: request.body.companyEmail,
-                                    password: hash,
-                                })
-                                .then((newCompany) => {
-                                    delete newCompany.dataValues.password;
-                                    response.status(201).send({
-                                        status: 'Successful',
-                                        data: newCompany,
-                                    });
-                                })
-                                .catch(error => response.send({
-                                    status: 'Success',
-                                    error: error.toString(),
-                                }));
-                        })
-                    } else {
-                        return response.status(400).json({
-                            status: 'Unsuccessful',
-                            message: 'Invalid data input',
-                            errors: validate.errors.all(),
-                        });
-                    }
-                }
-                else {
-                    return response.status(400).send({
-                        message: 'This email has been used for a registered company!'
+   
+    async createAccount(request, response) {
+        const company = Company.findOne({
+                            where: {
+                                email: request.body.companyEmail,
+                            },
+                        }).catch(error => { return error })
+        if (!company) {
+            let validate = new Validator(request.body, companyRules);
+            if (validate.passes()) {
+                bcrypt.hash(request.body.password, saltRounds, (err, hash) => {
+                    const newCompany = Company
+                            .create({
+                                companyName: request.body.companyName,
+                                email: request.body.companyEmail,
+                                password: hash,
+                            }).catch(error => { return error })
+                    return response.status(201).send({
+                        status: 'Successful',
+                        data: newCompany,
                     });
-                }
-            })
-            .catch(error => response.status(500).send(error.toString()));
+                })
+            } else {
+                return response.status(400).json({
+                    status: 'Unsuccessful',
+                    message: 'Invalid data input',
+                    errors: validate.errors.all(),
+                });
+            }
+        }else {
+            return response.status(400).send({
+                message: 'This email has been used for a registered company!'
+            });
+        }
     }
 
     async UpdateAccount(request, response) {
