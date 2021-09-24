@@ -1,8 +1,10 @@
 import passport from "passport"
 import adminController from "../controllers/admin";
+import companyController from "../controllers/company";
 
 
 let adminCon = new adminController()
+let compCon = new companyController()
 
 function isLoggedIn(req,res,next){
     console.log(req.user)
@@ -14,8 +16,12 @@ function isLoggedIn(req,res,next){
 }
 
 const Route = (app) => {
-    //endpoint to create admin account
-    app.post('/api/v1/admin/create', adminCon.createAccount);
+    //endpoint to create company account
+    app.post('/api/v1/admin/create', compCon.createAccount);
+
+    //endpoint to update company details
+    app.put('/api/v1/company/config/:companyId', compCon.UpdateAccount);
+
 
     //endpoint to create admin account with google auth
     app.get('/auth/google', passport.authenticate('google', {

@@ -11,20 +11,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Company.hasMany(models.Admin, {
-        foreignKey: 'companyId'
-      })
+      // Company.hasMany(models.Admin, {
+      //   foreignKey: 'companyId'
+      // })
     }
   };
   Company.init({
     companyName: DataTypes.STRING,
-    companyLogoUrl: DataTypes.STRING,
-    companyEmailAd: DataTypes.STRING,
-    companyContactNo: DataTypes.STRING,
-    employeeNo: DataTypes.INTEGER,
-    buildingNo: DataTypes.STRING,
-    street: DataTypes.STRING,
-    city: DataTypes.STRING,
+    logoUrl: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
+    verified: DataTypes.BOOLEAN,
+    contactNo: DataTypes.STRING,
+    employeeSize: DataTypes.STRING,
+    address: DataTypes.STRING,
     state: DataTypes.STRING,
     country: DataTypes.STRING
   }, {

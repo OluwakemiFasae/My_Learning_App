@@ -11,25 +11,27 @@ module.exports = {
       companyName: {
         type: Sequelize.STRING
       },
-      companyLogoUrl: {
+      logoUrl: {
         type: Sequelize.STRING
       },
-      companyEmailAd: {
+      email: {
         type: Sequelize.STRING
       },
-      companyContactNo: {
+      password: {
         type: Sequelize.STRING
       },
-      employeeNo: {
-        type: Sequelize.INTEGER
+      verified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
       },
-      buildingNo: {
+      contactNo: {
         type: Sequelize.STRING
       },
-      street: {
+      employeeSize: {
         type: Sequelize.STRING
       },
-      city: {
+      address: {
         type: Sequelize.STRING
       },
       state: {
