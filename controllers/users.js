@@ -70,4 +70,8 @@ export default class UserController {
                 });
             }
         }
+
+        getCurrentUser (request,response){
+          return response.send(request.user);
+      }
 }

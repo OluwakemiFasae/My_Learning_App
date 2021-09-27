@@ -25,7 +25,7 @@ const updateRules = {
 export default class CompanyController {
    
     async createAccount(request, response) {
-        const company = Company.findOne({
+        const company = await Company.findOne({
                             where: {
                                 email: request.body.companyEmail,
                             },
@@ -33,8 +33,8 @@ export default class CompanyController {
         if (!company) {
             let validate = new Validator(request.body, companyRules);
             if (validate.passes()) {
-                bcrypt.hash(request.body.password, saltRounds, (err, hash) => {
-                    const newCompany = Company
+                bcrypt.hash(request.body.password, saltRounds, async (err, hash) => {
+                    const newCompany = await Company
                             .create({
                                 companyName: request.body.companyName,
                                 email: request.body.companyEmail,
