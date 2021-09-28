@@ -1,7 +1,9 @@
 import Validator from 'validatorjs';
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+
 const Company = require('../models').Company;
+const Department = require('../models').Department;
 
 
 
@@ -23,23 +25,23 @@ const updateRules = {
     country: 'required'
 }
 export default class CompanyController {
-   
+
     async createAccount(request, response) {
         const company = await Company.findOne({
-                            where: {
-                                email: request.body.companyEmail,
-                            },
-                        }).catch(error => { return error })
+            where: {
+                email: request.body.companyEmail,
+            },
+        }).catch(error => { return error })
         if (!company) {
             let validate = new Validator(request.body, companyRules);
             if (validate.passes()) {
                 bcrypt.hash(request.body.password, saltRounds, async (err, hash) => {
                     const newCompany = await Company
-                            .create({
-                                companyName: request.body.companyName,
-                                email: request.body.companyEmail,
-                                password: hash,
-                            }).catch(error => { return error })
+                        .create({
+                            companyName: request.body.companyName,
+                            email: request.body.companyEmail,
+                            password: hash,
+                        }).catch(error => { return error })
                     return response.status(201).send({
                         status: 'Successful',
                         data: newCompany,
@@ -52,7 +54,7 @@ export default class CompanyController {
                     errors: validate.errors.all(),
                 });
             }
-        }else {
+        } else {
             return response.status(400).send({
                 message: 'This email has been used for a registered company!'
             });
@@ -97,4 +99,29 @@ export default class CompanyController {
         }
     }
 
+    async AddDept(request, response) {
+        const companyId = parseInt(request.params.companyId)
+        const company = await Company.findByPk(companyId).catch(error => { return error })
+        if (company) {
+            const depts = request.body.depts
+            let addedDepts = []
+            for (let dept of depts) {
+                const addedDept = await Department.create({
+                    companyId,
+                    deptName: dept
+                }).catch(error => { return error });
+                addedDepts.push(addedDept);
+            }
+            return response.status(201).send({
+                message: `${addedDepts.length} departments added`,
+                data: addedDepts,
+            });
+        } else {
+            return response.status(404).json({
+                status: 'Unsuccessful',
+                message: 'This company isn\'t registered. Please register'
+            });
+        }
+
+    }
 }

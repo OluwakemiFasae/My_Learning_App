@@ -17,7 +17,7 @@ export default class UserController {
         const validate = new Validator(request.body, loginRules);
         
         if (validate.passes()) {
-          const user = Company
+          const user = await Company
             .findOne({
               where: {
                 email: request.body.email
@@ -26,9 +26,9 @@ export default class UserController {
                 exclude: ['createdAt', 'updatedAt']
               },
             }).catch(error => { return error })
-
+            console.log(user)
             if(!user){
-                user = Employee.findOne({
+                user = await Employee.findOne({
                     where: {
                       email: request.body.email
                     },

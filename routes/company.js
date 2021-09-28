@@ -30,7 +30,8 @@ const Route = (app) => {
         })
     });
 
-    
+    //endpoint to create department during sit config
+    app.post('/api/v1/company/config/:companyId/department', authorize, compCon.AddDept)
 }
 
 export default Route;

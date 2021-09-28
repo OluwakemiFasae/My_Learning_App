@@ -1,3 +1,6 @@
+import jwt from 'jsonwebtoken'
+
+
 const authorize = (request, response, next) => {
     if (request.user){
         next()
