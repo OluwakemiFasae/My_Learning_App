@@ -62,7 +62,7 @@ export default class CompanyController {
     }
 
     async UpdateAccount(request, response) {
-        const companyId = parseInt(request.params.companyId)
+        const companyId = parseInt(request.user.id)
         const company = await Company.findByPk(companyId).catch(error => { return error })
         if (company) {
             let validate = new Validator(request.body, updateRules);
@@ -100,7 +100,7 @@ export default class CompanyController {
     }
 
     async AddDept(request, response) {
-        const companyId = parseInt(request.params.companyId)
+        const companyId = parseInt(request.user.id)
         const company = await Company.findByPk(companyId).catch(error => { return error })
         if (company) {
             const depts = request.body.depts
@@ -123,5 +123,81 @@ export default class CompanyController {
             });
         }
 
+    }
+
+    async getDept(request, response){
+        
+        const companyId = parseInt(request.user.id)
+        const deptId = parseInt(request.params.deptId)
+
+        const dept = await Department.findOne({
+            where: {
+                companyId,
+                id: deptId
+            }
+        }).catch(error => { return error });
+    
+        if (!dept) {
+          return response.status(404).json({
+            message: 'This department has not been added'
+          });
+        }
+        response.status(200).json({
+          status: 'Successful',
+          data: dept
+        });
+      }
+    
+
+    async getAllDept(request, response){
+        //d
+        const companyId = parseInt(request.user.id)
+
+        const depts = await Department.findAll({
+            where: {
+                companyId,
+            }
+        }).catch(error => { return error });
+    
+        if (depts.length === 0) {
+          return response.status(200).json({
+            message: `No department has been added for company ${companyId}`
+          });
+        }
+        response.status(200).json({
+          status: 'Successful',
+          data: depts
+        });
+      }
+
+    async updateDept(request, response){
+        //d
+        const companyId = parseInt(request.user.id)
+        const deptId = parseInt(request.params.deptId)
+
+        const dept = await Department.findOne({
+            where: {
+                companyId,
+                id: deptId
+            }
+        }).catch(error => { return error });
+    
+        if (dept){
+            const updatedDept = await dept.update({
+                deptName: request.body.deptName || dept.deptName
+            }).catch(error => { return error });
+
+            response.status(200).send({
+                message: `Successful!! ${dept.deptName} has been updated`,
+                data: updatedDept
+            });
+
+        }
+        else {
+          return response.status(404).json({
+            message: 'This department does not exist'
+          });
+        }
+        
     }
 }

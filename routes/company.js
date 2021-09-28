@@ -15,7 +15,7 @@ const Route = (app) => {
 
     
     //endpoint to update company details
-    app.put('/api/v1/company/config/:companyId', authorize, compCon.UpdateAccount);
+    app.put('/api/v1/company/config/', authorize, compCon.UpdateAccount);
 
 
     //endpoint to create admin account with google auth
@@ -30,8 +30,17 @@ const Route = (app) => {
         })
     });
 
-    //endpoint to create department during sit config
-    app.post('/api/v1/company/config/:companyId/department', authorize, compCon.AddDept)
+    //endpoint to create department during site config
+    app.post('/api/v1/company/config/department', authorize, compCon.AddDept)
+
+    //endpoint to get one department 
+    app.get('/api/v1/company/departments/:deptId', authorize, compCon.getDept)
+
+    //endpoint to get all departments 
+    app.get('/api/v1/company/departments', authorize, compCon.getAllDept)
+    
+    //endpoint to get update department information 
+    app.put('/api/v1/company/departments/:deptId', authorize, compCon.updateDept)
 }
 
 export default Route;
