@@ -17,6 +17,7 @@
     "url": "https://github.com/OluwakemiFasae/My_Learning_App/issues"
   },
   "homepage": "https://github.com/OluwakemiFasae/My_Learning_App#readme",
+  "type": "module",
   "dependencies": {
     "@sendgrid/mail": "^7.4.7",
     "babel-node": "0.0.1-security",
