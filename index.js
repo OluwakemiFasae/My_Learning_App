@@ -4,7 +4,7 @@ import passport from 'passport';
 import cookieSession from 'cookie-session';
 
 
-import './services/passport'
+require('./services/passport')
 
 import companyRoute from './routes/company';
 import userRoute from './routes/user';
