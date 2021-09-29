@@ -33,7 +33,6 @@ export default class EmployeeController {
                 const password = Math.random().toString(36).substring(2,8)
                 
                 const hashed = await bcrypt.hash(password, saltRounds)
-                console.log(hashed)
                     
                 const addedEmployee = await Employee.create({
                     firstname: employee.firstname,
@@ -94,7 +93,7 @@ export default class EmployeeController {
         const companyId = parseInt(request.user.id)
         const empId = parseInt(request.params.empId)
 
-        let empl = await Employee.findByPk(empId, {
+        let empl = await Employee.findByPk( {
             // where: {
             //     id:empId
             // },
@@ -124,7 +123,91 @@ export default class EmployeeController {
         });
     }
 
-    async generateNewPassword(){
+    async updateEmployee(request, response){
+        const companyId = parseInt(request.user.id)
 
+        const empId = parseInt(request.params.empId)
+
+        const empl = await Employee.findOne( {
+            where: {
+                id:empId
+            },
+            include: [{
+                model: Department,
+                as: 'Department',
+                where: {
+                    companyId
+                },
+                attributes: ['deptName']
+              }
+            ],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'deletedAt']
+              }
+        }).catch(error => { return error });
+    
+        if (empl){
+            const updatedEmpl = await empl.update({
+                firstname: request.body.firstname || empl.firstname,
+                lastname: request.body.lastname || empl.lastname,
+                email: request.body.email || empl.email,
+                phoneNo: request.body.phoneNo || empl.phoneNo,
+                deptId: request.body.deptId || empl.deptId,
+                jobtitle: request.body.jobtitle || empl.jobtitle
+            }).catch(error => { return error });
+
+            response.status(200).send({
+                message: `Successful!! ${empl.firstame} has been updated`,
+                data: updatedEmpl
+            });
+
+        }
+        else {
+          return response.status(404).json({
+            message: 'This employee hasn\'t been added'
+          });
+        }
+    }
+
+    async generateNewPassword(request, response){
+        const newPassword = Math.random().toString(36).substring(2,8)
+        const hashed = await bcrypt.hash(newPassword, saltRounds)
+
+        const empl = await Employee.findOne( {
+            where: {
+                id:empId
+            },
+            include: [{
+                model: Department,
+                as: 'Department',
+                where: {
+                    companyId
+                },
+                attributes: ['deptName']
+              }
+            ],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'deletedAt']
+              }
+        }).catch(error => { return error });
+    
+        if (empl){
+            const newPass = await empl.update({
+                password: hashed
+            }).catch(error => { return error });
+
+           newPass.dataValues.unhashedpassword = newPassword;
+
+            response.status(200).send({
+                message: `Successful!! ${empl.firstame}'s password has been changed`,
+                data: newPass
+            });
+
+        }
+        else {
+          return response.status(404).json({
+            message: 'This employee hasn\'t been added'
+          });
+        }
     }
 }
