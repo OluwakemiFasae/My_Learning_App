@@ -14,6 +14,11 @@ const Route = (app) => {
     //endpoint to get all employees
     app.get('/api/v1/company/employees', authorize, EmployeeCon.getAll)
 
+    //endpoint to update employees
+    app.get('/api/v1/company/employees/:empId', authorize, EmployeeCon.updateEmployee)
+
+    //endpoint to reset password for employee
+    app.get('/api/v1/company/employees/:empId', authorize, EmployeeCon.generateNewPassword)
 
     //endpoint to get the current user logged in
     //app.get('/currentuser', authorize, UserCon.getCurrentUser)

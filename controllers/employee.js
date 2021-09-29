@@ -169,9 +169,17 @@ export default class EmployeeController {
         }
     }
 
+    async deleteEmployee(){
+
+    }
     async generateNewPassword(request, response){
         const newPassword = Math.random().toString(36).substring(2,8)
         const hashed = await bcrypt.hash(newPassword, saltRounds)
+
+        const companyId = parseInt(request.user.id)
+
+        const empId = parseInt(request.params.empId)
+
 
         const empl = await Employee.findOne( {
             where: {
