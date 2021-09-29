@@ -27,7 +27,6 @@ export default class UserController {
             
             if(user){
               user.dataValues.admin = 'true'
-              console.log(user)
             }else{
               user = await Employee.findOne({
                 where: {
