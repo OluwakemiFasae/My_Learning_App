@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const Employee = require('../models').Employee;
+const Department = require('../models/').Department;
 const Company = require('../models').Company;
 
 const saltRounds = 10;
@@ -63,12 +64,64 @@ export default class EmployeeController {
         
     }
 
-    async getAll (req, res){
-        
+    async getAll (request, response){
+        const companyId = parseInt(request.user.id)
+
+        const empls = await Employee.findAll({
+            include: [{
+                model: Department,
+                as: 'Department',
+                where: {
+                    companyId
+                },
+                attributes: ['deptName']
+              }
+            ],
+        }).catch(error => { return error });
+    
+        if (empls.length === 0) {
+          return response.status(200).json({
+            message: `No employee has been added for company ${companyId}`
+          });
+        }
+        response.status(200).json({
+          status: 'Successful',
+          data: empls
+        });
     }
 
-    async getOne (req, res){
+    async getOne (request, response){
+        const companyId = parseInt(request.user.id)
+        const empId = parseInt(request.params.empId)
+
+        let empl = await Employee.findByPk(empId, {
+            // where: {
+            //     id:empId
+            // },
+            include: [{
+                model: Department,
+                as: 'Department',
+                where: {
+                    companyId
+                },
+                attributes: ['deptName']
+              }
+            ],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'deletedAt']
+              }
+        }).catch(error => { return error });
+    
+        if (!empl) {
+          return response.status(404).json({
+            message: 'This employee has not been added'
+          });
+        }
         
+        response.status(200).json({
+          status: 'Successful',
+          data: empl
+        });
     }
 
     async generateNewPassword(){
