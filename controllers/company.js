@@ -105,16 +105,32 @@ export default class CompanyController {
         if (company) {
             const depts = request.body.depts
             let addedDepts = []
+            let existing = []
+
             for (let dept of depts) {
-                const addedDept = await Department.create({
-                    companyId,
-                    deptName: dept
-                }).catch(error => { return error });
-                addedDepts.push(addedDept);
+                
+                const dpt = await Department.findOne({
+                    where: {
+                        companyId,
+                    },
+                }).catch(error => { return error })
+
+                if(dpt){
+                    existing.push(dpt.dataValues.deptName)
+                    continue;
+                }else{
+                    const addedDept = await Department.create({
+                        companyId,
+                        deptName: dept
+                    }).catch(error => { return error });
+                    
+                    addedDepts.push(addedDept);
+                }
+                
             }
             return response.status(201).send({
                 message: `${addedDepts.length} departments added`,
-                data: addedDepts,
+                data: addedDepts, existing
             });
         } else {
             return response.status(404).json({

@@ -7,7 +7,8 @@ import cookieSession from 'cookie-session';
 import './services/passport'
 
 import companyRoute from './routes/company';
-import userRoute from './routes/user'
+import userRoute from './routes/user';
+import employeeRoute from './routes/employee';
 
 //const cookieSession = require('cookie-session');
 
@@ -54,6 +55,7 @@ const port = process.env.PORT || 5000;
 
 companyRoute(app);
 userRoute(app);
+employeeRoute(app);
 
 app.get('/', (req, res) => 
     res.status(200).send({ message: 'Home Page' }))

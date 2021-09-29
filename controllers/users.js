@@ -3,10 +3,11 @@ import jwt from 'jsonwebtoken';
 const bcrypt = require('bcrypt');
 
 const Company = require('../models').Company;
+const Employee = require('../models').Employee;
 
 const loginRules = {
     email: 'required|email',
-    password: 'required|min:8',
+    password: 'required',
 };
 
 
@@ -17,33 +18,36 @@ export default class UserController {
         const validate = new Validator(request.body, loginRules);
         
         if (validate.passes()) {
-          const user = await Company
+          let user = await Company
             .findOne({
               where: {
                 email: request.body.email
-              },
-              attributes: {
-                exclude: ['createdAt', 'updatedAt']
-              },
+              }
             }).catch(error => { return error })
-            console.log(user)
-            if(!user){
-                user = await Employee.findOne({
-                    where: {
-                      email: request.body.email
-                    },
-                    attributes: {
-                      exclude: ['createdAt', 'updatedAt']
-                    },
-                  }).catch(error => { return error })
-
-                  if(!user){
+            
+            if(user){
+              user.dataValues.admin = 'true'
+              console.log(user)
+            }else{
+              user = await Employee.findOne({
+                where: {
+                  email: request.body.email
+                },
+                attributes: {
+                  exclude: ['createdAt', 'updatedAt']
+                },
+              }).catch(error => { return error })
+            
+                  if(user){
+                    user.dataValues.admin = 'false'
+                  }
+                  else{
                     return response.status(404).json({
                         status: 'Unsuccessful',
                         message: 'User not found',
                       });
                   }
-            }
+                }
             bcrypt.compare(
                   request.body.password,
                   user.dataValues.password, 
@@ -61,7 +65,7 @@ export default class UserController {
                       message: 'login successful', user, token
                     });
                   });
-              } 
+              }
             else{
                 return response.status(400).json({
                     status: 'Unsuccessful',
