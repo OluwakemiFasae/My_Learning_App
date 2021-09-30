@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec babel-node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --exec babel-node src/index.js",
+    "build": "babel src -d dist",
+    "start": "rimraf dist && npm run build && node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,10 +18,8 @@
     "url": "https://github.com/OluwakemiFasae/My_Learning_App/issues"
   },
   "homepage": "https://github.com/OluwakemiFasae/My_Learning_App#readme",
-  "type": "module",
   "dependencies": {
     "@sendgrid/mail": "^7.4.7",
-    "babel-node": "0.0.1-security",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cookie-session": "^1.4.0",
@@ -42,6 +41,10 @@
     "@babel/core": "^7.15.5",
     "@babel/node": "^7.15.4",
     "@babel/preset-env": "^7.15.6",
-    "nodemon": "^2.0.12"
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "nodemon": "^2.0.12",
+    "rimraf": "^3.0.2",
+    "webpack": "^5.55.1",
+    "webpack-cli": "^4.8.0"
   }
 }

@@ -3,7 +3,7 @@ import logger from 'morgan';
 import passport from 'passport';
 import cookieSession from 'cookie-session';
 
-
+import "regenerator-runtime/runtime.js";
 require('./services/passport')
 
 import companyRoute from './routes/company';
@@ -16,13 +16,13 @@ import employeeRoute from './routes/employee';
 require('dotenv').config()
 
 
-
 //setup the express app
 const app = express()
 
 app.use(cookieSession({
   name: 'google-auth-session',
-  keys: ['key1', 'key2']
+  maxAge: 30*24*60*60*1000,
+  keys: [process.env.COOKIE_KEY]
 }))
 
 // Parse incoming requests data -former function of body-parser
