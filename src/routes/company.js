@@ -17,6 +17,7 @@ const Route = (app) => {
     //endpoint to update company details
     app.put('/api/v1/company/config/', authorize, compCon.UpdateAccount);
 
+    
 
     //endpoint to create admin account with google auth
     app.get('/auth/google', passport.authenticate('google', {
