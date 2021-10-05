@@ -1,3 +1,5 @@
+import Validator from 'validatorjs';
+
 const bcrypt = require('bcrypt');
 
 const Employee = require('../models').Employee;
@@ -6,14 +8,31 @@ const Company = require('../models').Company;
 
 const saltRounds = 10;
 
+const employeeRules = {
+    firstname: 'required|min:3',
+    lastname: 'required|min:3',
+    email: 'required|email',
+    password: 'required|min:3',
+    deptId: 'required',
+    jobtitle: 'required|min:3'
+};
+
 export default class EmployeeController {
     async createNew(request, response) {
 
         const companyId = parseInt(request.user.id)
         const company = await Company.findByPk(companyId).catch(error => { return error })
-        if (company) {
 
-            const employees = request.body.employees
+        if (company) {
+            const { employees } = request.body
+            if (!employees) {
+                return response.status(404).json({
+                    status: 'Unsuccessful',
+                    message: 'Invalid Input',
+                    error: true
+                });
+            }
+
             //console.log((request.body.employees).length)
             let addedEmployees = []
             let existing = []
@@ -24,6 +43,7 @@ export default class EmployeeController {
                     where: {
                         email: employee.email,
                     },
+
                 })
 
                 if (empl) {
@@ -34,16 +54,28 @@ export default class EmployeeController {
 
                 const hashed = await bcrypt.hash(password, saltRounds)
 
-                const addedEmployee = await Employee.create({
-                    firstname: employee.firstname,
-                    lastname: employee.lastname,
-                    email: employee.email,
-                    password: hashed,
-                    verified: true,
-                    phoneNo: employee.phoneNo,
-                    deptId: employee.deptId,
-                    jobtitle: employee.jobtitle
-                }).catch(error => { return error });
+                let validate = new Validator(request.body, employeeRules);
+                let addedEmployee;
+
+                if (validate.passes()) {
+                    addedEmployee = await Employee.create({
+                        firstname: employee.firstname,
+                        lastname: employee.lastname,
+                        email: employee.email,
+                        password: hashed,
+                        verified: true,
+                        phoneNo: employee.phoneNo,
+                        deptId: employee.deptId,
+                        jobtitle: employee.jobtitle
+                    }).catch(error => { return error });
+                } else {
+                    return response.status(400).json({
+                        status: 'Unsuccessful',
+                        message: 'Invalid data input',
+                        error: true,
+                        errors: validate.errors.all(),
+                    });
+                }
 
                 addedEmployee.dataValues.unhashedpassword = password;
 
@@ -53,12 +85,14 @@ export default class EmployeeController {
 
             return response.status(201).send({
                 message: `${addedEmployees.length} employees added`,
-                data: addedEmployees, existing
+                data: addedEmployees, existing,
+                error: false
             })
         } else {
             return response.status(404).json({
                 status: 'Unsuccessful',
-                message: 'This company isn\'t registered. Please register'
+                message: 'This company isn\'t registered. Please register',
+                error: true
             });
         }
 
@@ -77,16 +111,21 @@ export default class EmployeeController {
                 attributes: ['deptName']
             }
             ],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            },
         }).catch(error => { return error });
 
         if (empls.length === 0) {
             return response.status(200).json({
-                message: `No employee has been added for company ${companyId}`
+                message: `No employee has been added for company ${companyId}`,
+                error: true
             });
         }
         response.status(200).json({
             status: 'Successful',
-            data: empls
+            data: empls,
+            error: false
         });
     }
 
@@ -109,20 +148,22 @@ export default class EmployeeController {
             }
         }).catch(error => { return error });
 
-        if (empl){
+        if (empl) {
             return response.status(200).json({
                 status: 'Successful',
-                data: empl
-            });
-        } 
-        
-        else{
-            return response.status(404).json({
-                message: 'This employee does not exist'
+                data: empl,
+                error: false
             });
         }
 
-        
+        else {
+            return response.status(404).json({
+                message: 'This employee does not exist',
+                error: true
+            });
+        }
+
+
     }
 
     async updateEmployee(request, response) {
@@ -136,24 +177,39 @@ export default class EmployeeController {
         }).catch(error => { return error });
 
         if (empl) {
-            const updatedEmpl = await empl.update({
-                firstname: request.body.firstname || empl.firstname,
-                lastname: request.body.lastname || empl.lastname,
-                email: request.body.email || empl.email,
-                phoneNo: request.body.phoneNo || empl.phoneNo,
-                deptId: request.body.deptId || empl.deptId,
-                jobtitle: request.body.jobtitle || empl.jobtitle
+            const { firstname, lastname, email, phoneNo, deptId, jobtitle } = request.body
+
+            let validate = new Validator(request.body, employeeRules);
+            let updatedEmpl;
+            
+            if (validate.passes()) {
+            updatedEmpl = await empl.update({
+                firstname: firstname || empl.firstname,
+                lastname: lastname || empl.lastname,
+                email: email || empl.email,
+                phoneNo: phoneNo || empl.phoneNo,
+                deptId: deptId || empl.deptId,
+                jobtitle: jobtitle || empl.jobtitle
             }).catch(error => { return error });
 
             response.status(200).send({
-                message: `Successful!! ${empl.firstname} has been updated`,
-                data: updatedEmpl
+                message: `Successful!! ${firstname} has been updated`,
+                data: updatedEmpl,
+                error: false
             });
-
+        }else {
+            return response.status(400).json({
+                status: 'Unsuccessful',
+                message: 'Invalid data input',
+                error: true,
+                errors: validate.errors.all(),
+            });
+        }
         }
         else {
             return response.status(404).json({
-                message: 'This employee hasn\'t been added'
+                message: 'This employee hasn\'t been added',
+                error: true
             });
         }
     }
@@ -166,12 +222,14 @@ export default class EmployeeController {
         if (empl) {
             await empl.destroy().catch(error => { return error });
             response.status(200).send({
-                message: `${empl.firstname} has been deleted`
+                message: `${empl.firstname} has been deleted`,
+                error: false
             })
         }
         else {
             return response.status(404).json({
-                message: 'This employee does not exist'
+                message: 'This employee does not exist',
+                error: true
             });
         }
 

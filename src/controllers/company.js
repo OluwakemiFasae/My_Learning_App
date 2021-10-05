@@ -2,19 +2,15 @@ import Validator from 'validatorjs';
 import jwt from 'jsonwebtoken';
 import Mailer from '../services/Mailer'
 
+
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-const verifyTemplate = require('../services/Templates/verifyTemplate')
-//const sgMail = require('@sendgrid/mail')
-//const Mailer = require('../services/Mailer');
-//const nodemailer = require('nodemailer');
-
+//const verifyTemplate = require('../services/Templates/verifyTemplate')
 
 const Company = require('../models').Company;
 const Department = require('../models').Department;
 
-//sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const saltRounds = 10;
 
@@ -34,118 +30,119 @@ const updateRules = {
     country: 'required'
 }
 
-// const transporter = nodemailer.createTransport({
-//     host: "smtp.office365.com", // hostname
-//     secureConnection: false, // TLS requires secureConnection to be false
-//     port: 587, // port for secure
-//     auth: {
-//         user: process.env.EMAIL_USERNAME,
-//         pass: process.env.EMAIL_PASSWORD,
-//     },
-// });
-
 
 export default class CompanyController {
 
     async createAccount(request, response) {
-        const company = await Company.findOne({
-            where: {
-                email: request.body.companyEmail,
-            },
-        }).catch(error => { return error })
-        if (!company) {
-            let validate = new Validator(request.body, companyRules);
-            if (validate.passes()) {
+
+        let validate = new Validator(request.body, companyRules);
+        if (validate.passes()) {
+
+            const { companyName, email, password } = request.body
+
+            const company = await Company.findOne({
+                where: {
+                    email
+                },
+            }).catch(error => { return error })
+
+
+            if (company) {
+                return response.status(400).send({
+                    message: 'This email has been used for a registered company!',
+                    error: true
+                });
+            }
+            else {
                 bcrypt.hash(request.body.password, saltRounds, async (err, hash) => {
                     const newCompany = await Company
                         .create({
-                            companyName: request.body.companyName,
-                            email: request.body.companyEmail,
-                            password: hash,
+                            companyName,
+                            email,
+                            password
                         }).catch(error => { return error })
 
-                        const vToken = jwt.sign(
-                            { id: newCompany.id, email: newCompany.email },
-                            process.env.VERIFICATION_TOKEN,
-                            { expiresIn: "7d" }
-                        );
+                    const vToken = jwt.sign(
+                        { id: newCompany.id, email: newCompany.email },
+                        process.env.VERIFICATION_TOKEN,
+                        { expiresIn: "7d" }
+                    );
 
-                        const url = `http://localhost:5000/api/v1/company/verify/${vToken}`
-                        const content = `Click <a href = '${url}'>here</a> to confirm your email.`
-                        // await sgMail.send({
-                        //     to: newCompany.email,
-                        //     from: process.env.EMAIL_USERNAME,
-                        //     subject: 'Verify Account',
-                        //     html: `Click <a href = '${url}'>here</a> to confirm your email.`
-                        //   }).catch(error => { 
-                        //         console.log(error)
-                        //         return error })
-                        
-                        const recipients = newCompany.email
-                        
-                        //send email here
-                        const newMail = {
-                            subject: 'Verify Account',
-                            recipients: recipients.split(',').map(email => ({email: email.trim() })),
-                            body: content
-                        }
+                    const url = `http://localhost:5000/api/v1/company/verify/${vToken}`
+                    const content = `Click <a href = '${url}'>here</a> to confirm your email.`
 
-                        const mailer = new Mailer(newMail);
+                    const recipients = newCompany.email
 
-                        try {
-                            await mailer.send();
-                        }catch (err) {
-                                response.status(422).send({
-                                    message: err
-                                });
-                            }
-                            
-                            return response.status(201).send({
-                                status: `Successful!! Sent a verification email to ${newCompany.email}`,
-                                data: newCompany, vToken
-                            });
+                    //send email here
+                    const newMail = {
+                        subject: 'Verify Account',
+                        recipients: recipients.split(',').map(email => ({ email: email.trim() })),
+                        body: content
+                    }
+
+                    const mailer = new Mailer(newMail);
+
+                    try {
+                        await mailer.send();
+                    } catch (err) {
+                        response.status(422).send({
+                            message: err
+                        });
+                    }
+
+                    return response.status(201).send({
+                        status: `Successful!! Sent a verification email to ${newCompany.email}`,
+                        data: newCompany, vToken,
+                        error: false
+                    });
                 })
-            } else {
-                return response.status(400).json({
-                    status: 'Unsuccessful',
-                    message: 'Invalid data input',
-                    errors: validate.errors.all(),
-                });
             }
-
-        } else {
-            return response.status(400).send({
-                message: 'This email has been used for a registered company!'
+        }
+        else {
+            return response.status(400).json({
+                status: 'Unsuccessful',
+                message: 'Invalid data input',
+                error: true,
+                errors: validate.errors.all(),
             });
         }
     }
 
+    
+
     async UpdateAccount(request, response) {
         const companyId = parseInt(request.user.id)
-        const company = await Company.findByPk(companyId).catch(error => { return error })
+        const company = await Company.findByPk(companyId, {
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+          }}).catch(error => { return error })
         if (company) {
             let validate = new Validator(request.body, updateRules);
 
             if (validate.passes()) {
+                const { companyName, logoUrl, contactNo, address, employeeSize, state, country } = request.body
+
                 const updatedDetails = await company.update({
-                    companyName: request.body.companyName || company.companyName,
+                    companyName: companyName || company.companyName,
                     verified: company.verified,
-                    logoUrl: request.body.logoUrl || company.logoUrl,
-                    contactNo: request.body.contactNo || company.contactNo,
-                    address: request.body.address || company.address,
-                    employeeSize: request.body.employeeSize || company.employeeSize,
-                    state: request.body.state || company.state,
-                    country: request.body.country || company.country
+                    logoUrl: logoUrl || company.logoUrl,
+                    contactNo: contactNo || company.contactNo,
+                    address: address || company.address,
+                    employeeSize: employeeSize || company.employeeSize,
+                    state: state || company.state,
+                    country: country || company.country
                 }).catch(error => { return error })
 
                 response.status(200).send({
                     message: `Successful!! ${company.companyName} has been updated`,
-                    data: updatedDetails
+                    data: updatedDetails,
+                    error: false
                 });
             } else {
                 return response.status(400).json({
                     status: 'Unsuccessful',
                     message: 'Invalid data input',
+                    error: true,
                     errors: validate.errors.all(),
                 });
             }
@@ -153,6 +150,7 @@ export default class CompanyController {
         else {
             return response.status(404).json({
                 status: 'Unsuccessful',
+                error: true,
                 message: 'This company isn\'t registered. Please register'
             });
         }
@@ -160,48 +158,64 @@ export default class CompanyController {
 
     async AddDept(request, response) {
         const companyId = parseInt(request.user.id)
+
         const company = await Company.findByPk(companyId).catch(error => { return error })
+
         if (company) {
-            const depts = request.body.depts
-            let addedDepts = []
-            let existing = []
-
-            for (let dept of depts) {
-                
-                const dpt = await Department.findOne({
-                    where: {
-                        companyId,
-                    },
-                }).catch(error => { return error })
-
-                if(dpt){
-                    existing.push(dpt.dataValues.deptName)
-                    continue;
-                }else{
-                    const addedDept = await Department.create({
-                        companyId,
-                        deptName: dept
-                    }).catch(error => { return error });
-                    
-                    addedDepts.push(addedDept);
-                }
-                
+            if (!request.body.depts) {
+                return response.status(404).json({
+                    message: 'Empty data',
+                    error: true
+                })
             }
-            return response.status(201).send({
-                message: `${addedDepts.length} departments added`,
-                data: addedDepts, existing
-            });
-        } else {
+            else {
+
+                const depts = request.body.depts
+                let addedDepts = []
+                let existing = []
+
+                for (let dept of depts) {
+
+                    const dpt = await Department.findOne({
+                        where: {
+                            companyId,
+                            deptName: dept
+                        },
+                    }).catch(error => { return error })
+
+                    if (dpt) {
+                        existing.push(dpt.dataValues.deptName)
+                        continue;
+                    } else {
+                        const addedDept = await Department.create({
+                            companyId,
+                            deptName: dept
+                        }).catch(error => { return error });
+
+                        addedDepts.push(addedDept.deptName);
+                    }
+
+                }
+                return response.status(201).send({
+                    message: `${addedDepts.length} departments added`,
+                    data: addedDepts, existing,
+                    error: false
+                });
+            }
+
+        }
+        else {
             return response.status(404).json({
                 status: 'Unsuccessful',
-                message: 'This company isn\'t registered. Please register'
+                message: 'This company isn\'t registered. Please register',
+                error: true
             });
         }
 
     }
 
-    async getDept(request, response){
-        
+    async getDept(request, response) {
+
         const companyId = parseInt(request.user.id)
         const deptId = parseInt(request.params.deptId)
 
@@ -209,43 +223,53 @@ export default class CompanyController {
             where: {
                 companyId,
                 id: deptId
-            }
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+              },
         }).catch(error => { return error });
-    
+
         if (!dept) {
-          return response.status(404).json({
-            message: 'This department has not been added'
-          });
+            return response.status(404).json({
+                message: 'This department has not been added',
+                error: true
+            });
         }
         response.status(200).json({
-          status: 'Successful',
-          data: dept
+            status: 'Successful',
+            data: dept,
+            error: false
         });
-      }
-    
+    }
 
-    async getAllDept(request, response){
+
+    async getAllDept(request, response) {
         //d
         const companyId = parseInt(request.user.id)
 
         const depts = await Department.findAll({
             where: {
                 companyId,
-            }
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+              },
         }).catch(error => { return error });
-    
+
         if (depts.length === 0) {
-          return response.status(200).json({
-            message: `No department has been added for company ${companyId}`
-          });
+            return response.status(200).json({
+                message: `No department has been added for company ${companyId}`,
+                error: true
+            });
         }
         response.status(200).json({
-          status: 'Successful',
-          data: depts
+            status: 'Successful',
+            data: depts,
+            error: false
         });
-      }
+    }
 
-    async updateDept(request, response){
+    async updateDept(request, response) {
         //d
         const companyId = parseInt(request.user.id)
         const deptId = parseInt(request.params.deptId)
@@ -254,25 +278,30 @@ export default class CompanyController {
             where: {
                 companyId,
                 id: deptId
-            }
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+              },
         }).catch(error => { return error });
-    
-        if (dept){
+
+        if (dept) {
             const updatedDept = await dept.update({
                 deptName: request.body.deptName || dept.deptName
             }).catch(error => { return error });
 
             response.status(200).send({
                 message: `Successful!! ${dept.deptName} has been updated`,
-                data: updatedDept
+                data: updatedDept,
+                error: false
             });
 
         }
         else {
-          return response.status(404).json({
-            message: 'This department does not exist'
-          });
+            return response.status(404).json({
+                message: 'This department does not exist',
+                error: true
+            });
         }
-        
+
     }
 }

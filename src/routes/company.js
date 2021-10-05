@@ -1,11 +1,11 @@
 import passport from "passport"
-import adminController from "../controllers/admin";
+import userController from "../controllers/users";
 import companyController from "../controllers/company";
 
 import authorize from '../middlewares/authorize' 
 
 
-let adminCon = new adminController()
+let userCon = new userController()
 let compCon = new companyController()
 
 
@@ -14,7 +14,7 @@ const Route = (app) => {
     app.post('/api/v1/admin/create', compCon.createAccount);
 
     //endpoint to verify email address
-    app.put('api/v1/company/verify', compCon.UpdateAccount);
+    app.put('api/v1/company/verify', compCon.verify, userCon.login);
     
     //endpoint to update company details
     app.put('/api/v1/company/config/', authorize, compCon.UpdateAccount);
