@@ -3,13 +3,13 @@ import sendgrid, { mail } from 'sendgrid';
 const helper = mail;
 
 class Mailer extends helper.Mail {
-    constructor({ subject, recipients, body}){
+    constructor({ subject, recipients }, content){
         super();
 
         this.sgApi = sendgrid(process.env.SENDGRID_API_KEY);
         this.from_email = new helper.Email('kemi.fasae@stemres.net');
         this.subject = subject;
-        this.body = new helper.Content('text/html', body);
+        this.body = new helper.Content('text/html', content);
         this.recipients = this.formatAddresses(recipients);
         
         
