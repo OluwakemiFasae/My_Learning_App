@@ -7,7 +7,7 @@ export default (message) => {
                         <h3> Account Verification </h3>
                         
                         <p> Please verify your account </p>
-                        <p> Click <a href = "${process.env.redirectDomain}/${message.body}">here</a> to confirm your email.</p>
+                        <p> Click <a href = "${process.env.REDIRECT_DOMAIN}${message.body}">here</a> to confirm your email.</p>
 
                 </body>
             </html>

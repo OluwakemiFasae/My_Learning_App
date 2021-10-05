@@ -60,5 +60,18 @@ employeeRoute(app);
 app.get('/', (req, res) => 
     res.status(200).send({ message: 'Home Page' }))
 
+app.get('*', (request, response) => response.status(404).send({
+  message: 'INVALID ROUTE!!!.',
+}));
+app.post('*', (request, response) => response.status(404).send({
+  message: 'INVALID ROUTE!!!.',
+}));
+app.put('*', (request, response) => response.status(404).send({
+  message: 'INVALID ROUTE!!!.',
+}));
+app.delete('*', (request, response) => response.status(404).send({
+  message: 'INVALID ROUTE!!!.',
+}));
+
 app.listen(port, () => 
     console.log(`App is running and listening on port ${port}!`))

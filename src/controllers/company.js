@@ -64,7 +64,7 @@ export default class CompanyController {
                         { expiresIn: "7d" }
                     );
 
-                    const content = `/api/v1/company/verify/${vToken}`
+                    const content = `api/v1/company/verify/${vToken}`
                     //const content = url
                     const recipients = newCompany.email
 
@@ -108,7 +108,58 @@ export default class CompanyController {
         }
     }
 
-    
+    async verify(request, response, next) {
+        const { token } = request.params
+
+        // Check we have an id
+        if (!token) {
+            return response.status(422).send({
+                message: "Missing Token"
+            });
+        }
+
+        //Verify the token from the URL
+        let payload = null
+        try {
+            payload = jwt.verify(
+                token,
+                process.env.VERIFICATION_TOKEN
+            );
+        } catch (err) {
+            return response.status(500).send(err);
+        }
+
+        try {
+            // Find user with matching ID
+            const user = await Company.findOne({
+                where: {
+                    email: payload.email,
+                }
+            })
+
+            if (!user) {
+                return response.status(404).send({
+                    message: "User does not  exists"
+                });
+            }
+
+            // Update user verification status to true
+            user.verified = true;
+
+            const verified = await user.update({
+                verified: true
+            })
+
+            response.status(200).send({
+                message: `${verified.email} is verified`,
+                data: verified
+            });
+
+            //next()
+        } catch (err) {
+            return response.status(500).send(err);
+        }
+    }
 
     async UpdateAccount(request, response) {
         const companyId = parseInt(request.user.id)
