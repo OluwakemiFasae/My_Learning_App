@@ -6,7 +6,7 @@ import Mailer from '../services/Mailer'
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-//const verifyTemplate = require('../services/Templates/verifyTemplate')
+const verifyTemplate = require('../services/Templates/verifyTemplate').default
 
 const Company = require('../models').Company;
 const Department = require('../models').Department;
@@ -38,28 +38,24 @@ export default class CompanyController {
         let validate = new Validator(request.body, companyRules);
         if (validate.passes()) {
 
-            const { companyName, email, password } = request.body
+            const { companyName, companyEmail, password } = request.body
 
             const company = await Company.findOne({
                 where: {
-                    email
+                    email: companyEmail
                 },
             }).catch(error => { return error })
 
 
-            if (company) {
-                return response.status(400).send({
-                    message: 'This email has been used for a registered company!',
-                    error: true
-                });
-            }
-            else {
+            
+            
+            if(!company){
                 bcrypt.hash(request.body.password, saltRounds, async (err, hash) => {
                     const newCompany = await Company
                         .create({
                             companyName,
-                            email,
-                            password
+                            email: companyEmail,
+                            password: hash
                         }).catch(error => { return error })
 
                     const vToken = jwt.sign(
@@ -68,9 +64,8 @@ export default class CompanyController {
                         { expiresIn: "7d" }
                     );
 
-                    const url = `http://localhost:5000/api/v1/company/verify/${vToken}`
-                    const content = `Click <a href = '${url}'>here</a> to confirm your email.`
-
+                    const content = `/api/v1/company/verify/${vToken}`
+                    //const content = url
                     const recipients = newCompany.email
 
                     //send email here
@@ -80,7 +75,7 @@ export default class CompanyController {
                         body: content
                     }
 
-                    const mailer = new Mailer(newMail);
+                    const mailer = new Mailer(newMail, verifyTemplate(newMail));
 
                     try {
                         await mailer.send();
@@ -96,6 +91,11 @@ export default class CompanyController {
                         error: false
                     });
                 })
+            }else{
+                return response.status(201).send({
+                    status: 'Company exists',
+                    error: true
+                });
             }
         }
         else {
