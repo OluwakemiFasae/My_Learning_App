@@ -1,11 +1,20 @@
 import Validator from 'validatorjs';
+import jwt from 'jsonwebtoken';
+import Mailer from '../services/Mailer'
+
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+
+const verifyTemplate = require('../services/Templates/verifyTemplate')
+//const sgMail = require('@sendgrid/mail')
+//const Mailer = require('../services/Mailer');
+//const nodemailer = require('nodemailer');
+
 
 const Company = require('../models').Company;
 const Department = require('../models').Department;
 
-
+//sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const saltRounds = 10;
 
@@ -24,6 +33,18 @@ const updateRules = {
     state: 'required',
     country: 'required'
 }
+
+// const transporter = nodemailer.createTransport({
+//     host: "smtp.office365.com", // hostname
+//     secureConnection: false, // TLS requires secureConnection to be false
+//     port: 587, // port for secure
+//     auth: {
+//         user: process.env.EMAIL_USERNAME,
+//         pass: process.env.EMAIL_PASSWORD,
+//     },
+// });
+
+
 export default class CompanyController {
 
     async createAccount(request, response) {
@@ -42,10 +63,47 @@ export default class CompanyController {
                             email: request.body.companyEmail,
                             password: hash,
                         }).catch(error => { return error })
-                    return response.status(201).send({
-                        status: 'Successful',
-                        data: newCompany,
-                    });
+
+                        const vToken = jwt.sign(
+                            { id: newCompany.id, email: newCompany.email },
+                            process.env.VERIFICATION_TOKEN,
+                            { expiresIn: "7d" }
+                        );
+
+                        const url = `http://localhost:5000/api/v1/company/verify/${vToken}`
+                        const content = `Click <a href = '${url}'>here</a> to confirm your email.`
+                        // await sgMail.send({
+                        //     to: newCompany.email,
+                        //     from: process.env.EMAIL_USERNAME,
+                        //     subject: 'Verify Account',
+                        //     html: `Click <a href = '${url}'>here</a> to confirm your email.`
+                        //   }).catch(error => { 
+                        //         console.log(error)
+                        //         return error })
+                        
+                        const recipients = newCompany.email
+                        
+                        //send email here
+                        const newMail = {
+                            subject: 'Verify Account',
+                            recipients: recipients.split(',').map(email => ({email: email.trim() })),
+                            body: content
+                        }
+
+                        const mailer = new Mailer(newMail);
+
+                        try {
+                            await mailer.send();
+                        }catch (err) {
+                                response.status(422).send({
+                                    message: err
+                                });
+                            }
+                            
+                            return response.status(201).send({
+                                status: `Successful!! Sent a verification email to ${newCompany.email}`,
+                                data: newCompany, vToken
+                            });
                 })
             } else {
                 return response.status(400).json({
@@ -54,6 +112,7 @@ export default class CompanyController {
                     errors: validate.errors.all(),
                 });
             }
+
         } else {
             return response.status(400).send({
                 message: 'This email has been used for a registered company!'

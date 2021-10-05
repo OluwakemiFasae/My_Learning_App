@@ -35,6 +35,7 @@ passport.use(new GoogleStrategy({
                 companyName: profile.displayName,
                 email: profile.emails[0].value,
                 password: '',
+                verified: true,
                 logoUrl: profile.photos[0].value
             })
                 

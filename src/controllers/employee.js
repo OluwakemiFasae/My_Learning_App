@@ -39,6 +39,7 @@ export default class EmployeeController {
                     lastname: employee.lastname,
                     email: employee.email,
                     password: hashed,
+                    verified: true,
                     phoneNo: employee.phoneNo,
                     deptId: employee.deptId,
                     jobtitle: employee.jobtitle

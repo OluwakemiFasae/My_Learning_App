@@ -7,8 +7,6 @@
     "dev": "nodemon --exec babel-node src/index.js",
     "build": "babel src -d dist",
     "start": "rimraf dist && npm run build && node dist/index.js"
-
-   
   },
   "repository": {
     "type": "git",
@@ -21,6 +19,10 @@
   },
   "homepage": "https://github.com/OluwakemiFasae/My_Learning_App#readme",
   "dependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/node": "^7.15.4",
+    "@babel/preset-env": "^7.15.6",
     "@sendgrid/mail": "^7.4.7",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
@@ -30,17 +32,15 @@
     "express-session": "^1.17.2",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.6.5",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
+    "sendgrid": "^5.2.3",
     "sequelize": "^6.6.5",
     "sequelize-cli": "^6.2.0",
-    "validatorjs": "^3.22.1",
-    "@babel/cli": "^7.15.7",
-    "@babel/core": "^7.15.5",
-    "@babel/node": "^7.15.4",
-    "@babel/preset-env": "^7.15.6"
+    "validatorjs": "^3.22.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.15.7",

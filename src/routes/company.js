@@ -13,6 +13,8 @@ const Route = (app) => {
     //endpoint to create company account
     app.post('/api/v1/admin/create', compCon.createAccount);
 
+    //endpoint to verify email address
+    app.put('api/v1/company/verify', compCon.UpdateAccount);
     
     //endpoint to update company details
     app.put('/api/v1/company/config/', authorize, compCon.UpdateAccount);

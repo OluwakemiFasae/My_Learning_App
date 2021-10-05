@@ -31,10 +31,7 @@ export default class UserController {
               user = await Employee.findOne({
                 where: {
                   email: request.body.email
-                },
-                attributes: {
-                  exclude: ['createdAt', 'updatedAt']
-                },
+                }
               }).catch(error => { return error })
             
                   if(user){
@@ -47,6 +44,12 @@ export default class UserController {
                       });
                   }
                 }
+
+				if(!user.verified){
+					return response.status(403).send({ 
+						  message: "Please verify your Account." 
+					});
+			   }
             bcrypt.compare(
                   request.body.password,
                   user.dataValues.password, 
@@ -58,7 +61,7 @@ export default class UserController {
                     }
                     const token = jwt.sign(
                       { id: user.dataValues.id, email: user.dataValues.email },
-                      process.env.JWT_SECRET, { expiresIn: 60 * 60 });
+                      process.env.JWT_SECRET, { expiresIn: "3d" });
                     delete user.dataValues.password;
                     return response.status(200).send({
                       message: 'login successful', user, token
