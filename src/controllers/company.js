@@ -50,7 +50,7 @@ export default class CompanyController {
             
             
             if(!company){
-                bcrypt.hash(request.body.password, saltRounds, async (err, hash) => {
+                bcrypt.hash(password, saltRounds, async (err, hash) => {
                     const newCompany = await Company
                         .create({
                             companyName,

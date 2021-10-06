@@ -11,7 +11,7 @@ import userRoute from './routes/user';
 import employeeRoute from './routes/employee';
 
 //const cookieSession = require('cookie-session');
-
+const cors = require('cors')
 
 require('dotenv').config()
 
@@ -30,6 +30,10 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
+
+// app.use(cors({
+//   origin: '*'
+// }));
 
 // Log requests to the console.
 app.use(logger('dev'));

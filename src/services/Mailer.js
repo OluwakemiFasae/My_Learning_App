@@ -22,11 +22,6 @@ class Mailer extends helper.Mail {
     }
 
     formatAddresses(recipients){
-        // console.log('This is before formatting address')
-        // console.log(recipients)
-        // console.log('This is the type of')
-        // console.log(typeof(recipients))
-
         return recipients.map(( { email } ) => {
             return new helper.Email(email);
         })
@@ -43,12 +38,8 @@ class Mailer extends helper.Mail {
 
     addRecipients(){
         const personalize = new helper.Personalization();
-        
-        // console.log('This is inside the addRecipients function')
-        // console.log(this.recipients)
 
         this.recipients.forEach(recipient => {
-            console.log(recipient)
             personalize.addTo(recipient);
         });
         this.addPersonalization(personalize);
