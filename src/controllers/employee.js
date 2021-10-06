@@ -234,7 +234,7 @@ export default class EmployeeController {
         }
 
     }
-    async generateNewPassword(request, response) {
+    async resetEmployee(request, response) {
         const newPassword = Math.random().toString(36).substring(2, 8)
         const hashed = await bcrypt.hash(newPassword, saltRounds)
 

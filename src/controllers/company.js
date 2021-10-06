@@ -45,12 +45,10 @@ export default class CompanyController {
                     email: companyEmail
                 },
             }).catch(error => { return error })
-
-
             
             
             if(!company){
-                bcrypt.hash(request.body.password, saltRounds, async (err, hash) => {
+                bcrypt.hash(password, saltRounds, async (err, hash) => {
                     const newCompany = await Company
                         .create({
                             companyName,
