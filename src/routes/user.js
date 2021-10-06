@@ -8,9 +8,11 @@ const Route = (app) => {
     //endpoint to create company account
     app.post('/api/v1/user/login', UserCon.login);
 
-    app.get('/api/v1/company/resetemail/', UserCon.resetEmail)
+    app.get('/api/v1/user/resetemail/', UserCon.resetEmail)
 
-    app.post('/api/v1/company/resetpwd/:token', UserCon.resetPassword)
+    app.put('/api/v1/user/resetpwd/:token', UserCon.resetPassword)
+
+    app.put('/api/v1/user/resetpwd/', authorize, UserCon.changePassword)
 
     //endpoint to get the current user logged in
     app.get('/currentuser', authorize, UserCon.getCurrentUser)

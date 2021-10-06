@@ -45,8 +45,6 @@ export default class CompanyController {
                     email: companyEmail
                 },
             }).catch(error => { return error })
-
-
             
             
             if(!company){

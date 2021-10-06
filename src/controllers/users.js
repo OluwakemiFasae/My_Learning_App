@@ -98,14 +98,14 @@ export default class UserController {
 		let user;
 
 		if (validate.passes()) {
-			
+
 			user = await Company
 				.findOne({
 					where: {
 						email
 					}
 				}).catch(error => { return error })
-				
+
 			if (!user) {
 				console.log('I should not get here o')
 				user = await Employee.findOne({
@@ -113,7 +113,7 @@ export default class UserController {
 						email
 					}
 				}).catch(error => { return error })
-				
+
 				if (!user) {
 					return response.status(404).json({
 						status: 'Unsuccessful',
@@ -121,7 +121,7 @@ export default class UserController {
 					});
 				}
 			}
-			
+
 
 			const pwToken = jwt.sign(
 				{ id: user.id, email: user.email },
@@ -167,56 +167,136 @@ export default class UserController {
 
 	async resetPassword(request, response) {
 		//
-		const { token, newPassword } = request.params
+		const { token } = request.params
+		const { newPassword } = request.body
 
-        // Check we have an id
-        if (!token) {
-            return response.status(422).send({
-                message: "Missing Token"
-            });
-        }
+		if (!newPassword) {
+			return response.status(422).send({
+				message: "Please enter a password"
+			});
+		}
 
-        //Verify the token from the URL
-        let payload = null
-        try {
-            payload = jwt.verify(
-                token,
-                process.env.VERIFICATION_TOKEN
-            );
-        } catch (err) {
-            return response.status(500).send(err);
-        }
+		// Check we have an id
+		if (!token) {
+			return response.status(422).send({
+				message: "Missing Token"
+			});
+		}
 
-        try {
-            // Find user with matching ID
-            const user = await Company.findOne({
-                where: {
-                    email: payload.email,
-                }
-            })
 
-            if (!user) {
-                return response.status(404).send({
-                    message: "User does not  exists"
-                });
-            }
+		//Verify the token from the URL
+		let payload = null
+		try {
+			payload = jwt.verify(
+				token,
+				process.env.VERIFICATION_TOKEN
+			);
 
-			const newhash = await bcrypt.hash(newPassword, saltRounds)
-			
-			await user.update({
-				password: newhash
+		} catch (err) {
+			return response.status(500).send(err);
+		}
+
+		let user
+		try {
+			// Find user with matching ID
+			user = await Company.findOne({
+				where: {
+					email: payload.email,
+				}
 			})
 
-			response.status(200).send({
-				message: `Successful!! Your password has been changed`,
-				error: false,
-				data: newPassword, newhash
-				
-			});
-	}catch (err) {
-            return response.status(500).send(err);
-        }
+			if (!user) {
+				user = await Employee.findOne({
+					where: {
+						email: payload.email
+					}
+				})
 
-}
+				if (!user) {
+					return response.status(404).send({
+						message: "User does not  exists"
+					});
+				}
+			}
+
+			bcrypt.hash(newPassword, saltRounds, async (err, hash) => {
+				const newUpdate = await user.update({
+					password: hash
+				})
+
+				return response.status(200).send({
+					message: `Successful!! Your password has been changed`,
+					error: false,
+					data: newUpdate.dataValues.password
+
+				});
+			})
+
+		} catch (err) {
+			console.log(err)
+			return response.status(500).send(err);
+		}
+
+	}
+
+	async changePassword(request, response) {
+		//
+		const { oldPassword, newPassword } = request.body
+
+		const id = parseInt(request.user.id)
+		let user
+
+		try {
+			// Find user with matching ID
+
+			user = await Company.findByPk(id, {
+				where: {
+					id,
+				}
+			})
+
+			if (!user) {
+				user = await Employee.findByPk(id, {
+					where: {
+						id
+					}
+				})
+
+
+				if (!user) {
+					return response.status(404).send({
+						message: "User does not  exists"
+					});
+				}
+			}
+
+			bcrypt.compare(
+				oldPassword,
+				user.dataValues.password,
+				(err, resp) => {
+					if (resp === false) {
+						return response.status(401).send({
+							message: 'Wrong Password',
+						});
+					}
+					bcrypt.hash(newPassword, saltRounds, async (err, hash) => {
+						const newUpdate = await user.update({
+							password: hash
+						})
+		
+						return response.status(200).send({
+							message: `Successful!! Your password has been changed`,
+							error: false,
+		
+						});
+					})
+					
+				}); 
+		}catch (err) {
+			console.log(err)
+			return response.status(500).send(err);
+		}
+
+	}
 
 }

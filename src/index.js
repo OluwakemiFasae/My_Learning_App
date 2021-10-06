@@ -31,9 +31,9 @@ app.use(express.urlencoded({
   extended: true
 }));
 
-// app.use(cors({
-//   origin: '*'
-// }));
+app.use(cors({
+  origin: '*'
+}));
 
 // Log requests to the console.
 app.use(logger('dev'));

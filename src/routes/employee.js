@@ -18,7 +18,7 @@ const Route = (app) => {
     app.put('/api/v1/company/employees/:empId', authorize, EmployeeCon.updateEmployee)
 
     //endpoint to reset password for employee
-    app.put('/api/v1/company/employees/:empId/resetpwd', authorize, EmployeeCon.generateNewPassword)
+    app.put('/api/v1/company/employees/:empId/resetpwd', authorize, EmployeeCon.resetEmployee)
 
     //endpoint to update employees
     app.delete('/api/v1/company/employees/:empId', authorize, EmployeeCon.deleteEmployee)
