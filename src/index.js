@@ -11,7 +11,7 @@ import userRoute from './routes/user';
 import employeeRoute from './routes/employee';
 
 //const cookieSession = require('cookie-session');
-
+const cors = require('cors');
 
 require('dotenv').config()
 
@@ -33,6 +33,10 @@ app.use(express.urlencoded({
 
 // Log requests to the console.
 app.use(logger('dev'));
+
+app.use(cors({
+  origin: '*'
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
