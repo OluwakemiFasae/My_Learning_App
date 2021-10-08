@@ -55,7 +55,7 @@ const responseHandler = (req, res, statusCode, data, message) => {
 
     default:
       status = 'Unsuccessful'
-      errMessage = message
+      errMessage = message || 'Internal server error'
       break
   }
   const response = data || {}
