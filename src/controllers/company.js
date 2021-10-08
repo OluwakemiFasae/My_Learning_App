@@ -78,9 +78,7 @@ export default class CompanyController {
           try {
             await mailer.send()
           } catch (err) {
-            response.status(422).send({
-              message: err,
-            })
+            return responseHandler(request, response, 422, null, err)
           }
 
           return responseHandler(request, response, 201, {
