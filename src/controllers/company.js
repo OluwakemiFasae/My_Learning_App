@@ -83,11 +83,10 @@ export default class CompanyController {
             })
           }
 
-          return response.status(201).send({
-            status: `Successful!! Sent a verification email to ${newCompany.email}`,
+          return responseHandler(request, response, 201, {
+            message: `Account created Successfully!! A verification email has been sent to ${newCompany.email}`,
             data: newCompany,
             vToken,
-            error: false,
           })
         })
       } else {
@@ -98,25 +97,15 @@ export default class CompanyController {
           null,
           'Company already exists'
         )
-        /*  return response.status(201).send({
-                    status: 'Company exists',
-                    error: true
-                }); */
       }
     } else {
-      return responseHandler(
-        request,
-        response,
-        422,
-        null,
-        validate.errors.all()
-      )
-      /*   return response.status(400).json({ status: 'Unsuccessful', message: 'Invalid data input',  error: true,errors: validate.errors.all(),
-         })
-        */
+      return responseHandler(request, response, 422, null, {
+        ...validate.errors.all(),
+      })
     }
   }
 
+  // Verify Account creation Token
   async verify(request, response, next) {
     const { token } = request.params
 

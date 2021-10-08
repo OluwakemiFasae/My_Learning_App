@@ -1,3 +1,10 @@
 Split validator into a different files
 Single response handler => This contains req,res, statuscode data and error messages.
 Remove password from created account
+
+- Need to Remove sensitive information from the response
+- Email is sent even theres an issue with account creation 
+
+
+[] Completed response for index.js wildcard for wrong url
+[] 
