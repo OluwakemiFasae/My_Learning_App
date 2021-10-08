@@ -45,51 +45,58 @@ export default class CompanyController {
                     email: companyEmail
                 },
             }).catch(error => { return error })
-            
-            
-            if(!company){
-                bcrypt.hash(password, saltRounds, async (err, hash) => {
-                    const newCompany = await Company
-                        .create({
-                            companyName,
-                            email: companyEmail,
-                            password: hash
-                        }).catch(error => { return error })
 
-                    const vToken = jwt.sign(
-                        { id: newCompany.id, email: newCompany.email },
-                        process.env.VERIFICATION_TOKEN,
-                        { expiresIn: "7d" }
-                    );
 
-                    const content = `api/v1/company/verify/${vToken}`
-                    //const content = url
-                    const recipients = newCompany.email
+            if (!company) {
 
-                    //send email here
-                    const newMail = {
-                        subject: 'Verify Account',
-                        recipients: recipients.split(',').map(email => ({ email: email.trim() })),
-                        body: content
-                    }
+                try {
+                    bcrypt.hash(password, saltRounds, async (err, hash) => {
+                        const newCompany = await Company
+                            .create({
+                                companyName,
+                                email: companyEmail,
+                                password: hash
+                            }).catch(error => { return error })
 
-                    const mailer = new Mailer(newMail, verifyTemplate(newMail));
+                        if(newCompany){
+                            const vToken = jwt.sign(
+                            { id: newCompany.id, email: newCompany.email },
+                            process.env.VERIFICATION_TOKEN,
+                            { expiresIn: "7d" }
+                        );
 
-                    try {
-                        await mailer.send();
-                    } catch (err) {
-                        response.status(422).send({
-                            message: err
+                        const content = `api/v1/company/verify/${vToken}`
+                        //const content = url
+                        const recipients = newCompany.email
+
+                        //send email here
+                        const newMail = {
+                            subject: 'Verify Account',
+                            recipients: recipients.split(',').map(email => ({ email: email.trim() })),
+                            body: content
+                        }
+
+                        const mailer = new Mailer(newMail, verifyTemplate(newMail));
+
+                        try {
+                            await mailer.send();
+                        } catch (err) {
+                            response.status(422).send({
+                                message: err
+                            });
+                        }
+
+                        return response.status(201).send({
+                            status: `Successful!! Sent a verification email to ${newCompany.email}`,
+                            data: newCompany, vToken,
+                            error: false
                         });
                     }
-
-                    return response.status(201).send({
-                        status: `Successful!! Sent a verification email to ${newCompany.email}`,
-                        data: newCompany, vToken,
-                        error: false
-                    });
-                })
-            }else{
+                    })
+                } catch (error) {
+                    return (error)
+                }
+            } else {
                 return response.status(201).send({
                     status: 'Company exists',
                     error: true
@@ -164,7 +171,8 @@ export default class CompanyController {
         const company = await Company.findByPk(companyId, {
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
-          }}).catch(error => { return error })
+            }
+        }).catch(error => { return error })
         if (company) {
             let validate = new Validator(request.body, updateRules);
 
@@ -275,7 +283,7 @@ export default class CompanyController {
             },
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
-              },
+            },
         }).catch(error => { return error });
 
         if (!dept) {
@@ -302,7 +310,7 @@ export default class CompanyController {
             },
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
-              },
+            },
         }).catch(error => { return error });
 
         if (depts.length === 0) {
@@ -319,7 +327,7 @@ export default class CompanyController {
     }
 
     async getDeptByPage(request, response) {
-        
+
         const companyId = parseInt(request.user.id)
 
         let limit = 25;   // number of records per page
@@ -330,19 +338,19 @@ export default class CompanyController {
                 companyId,
             },
         })
-        
-        if(allData.length === 0){
-                return response.status(404).json({
-                    status: `No department has been added for company ${companyId}`,
-                    error: true
-                });
-        }else{
+
+        if (allData.length === 0) {
+            return response.status(404).json({
+                status: `No department has been added for company ${companyId}`,
+                error: true
+            });
+        } else {
             let page = request.params.age //to get page number
 
             let pages = Math.ceil(allData.count / limit);
-		    offset = limit * (page - 1);
-            
-            const pagedData =  await Department.findAll({
+            offset = limit * (page - 1);
+
+            const pagedData = await Department.findAll({
                 limit: limit,
                 offset: offset,
                 where: {
@@ -350,10 +358,10 @@ export default class CompanyController {
                 },
                 attributes: {
                     exclude: ['createdAt', 'updatedAt']
-                  },
+                },
             }).catch(error => { return error });
-                
-            
+
+
             response.status(200).json({
                 status: 'Successful',
                 data: pagedData,
@@ -361,7 +369,7 @@ export default class CompanyController {
                 error: false
             });
         }
-        
+
 
 
         const depts = await Department.findAll({
@@ -370,7 +378,7 @@ export default class CompanyController {
             },
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
-              },
+            },
         }).catch(error => { return error });
 
         if (depts.length === 0) {
@@ -398,7 +406,7 @@ export default class CompanyController {
             },
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
-              },
+            },
         }).catch(error => { return error });
 
         if (dept) {
