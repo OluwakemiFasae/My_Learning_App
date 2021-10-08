@@ -39,6 +39,9 @@ const Route = (app) => {
 
     //endpoint to get all departments 
     app.get('/api/v1/company/departments', authorize, compCon.getAllDept)
+
+    //endpoint to get department by pages
+    app.get('/api/v1/company/departments/:page', authorize, compCon.getDeptByPage)
     
     //endpoint to get update department information 
     app.put('/api/v1/company/departments/:deptId', authorize, compCon.updateDept)

@@ -318,6 +318,74 @@ export default class CompanyController {
         });
     }
 
+    async getDeptByPage(request, response) {
+        
+        const companyId = parseInt(request.user.id)
+
+        let limit = 25;   // number of records per page
+        let offset = 0;
+
+        const allData = await Department.findAndCountAll({
+            where: {
+                companyId,
+            },
+        })
+        
+        if(allData.length === 0){
+                return response.status(404).json({
+                    status: `No department has been added for company ${companyId}`,
+                    error: true
+                });
+        }else{
+            let page = request.params.age //to get page number
+
+            let pages = Math.ceil(allData.count / limit);
+		    offset = limit * (page - 1);
+            
+            const pagedData =  await Department.findAll({
+                limit: limit,
+                offset: offset,
+                where: {
+                    companyId,
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                  },
+            }).catch(error => { return error });
+                
+            
+            response.status(200).json({
+                status: 'Successful',
+                data: pagedData,
+                pages,
+                error: false
+            });
+        }
+        
+
+
+        const depts = await Department.findAll({
+            where: {
+                companyId,
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+              },
+        }).catch(error => { return error });
+
+        if (depts.length === 0) {
+            return response.status(200).json({
+                message: `No department has been added for company ${companyId}`,
+                error: true
+            });
+        }
+        response.status(200).json({
+            status: 'Successful',
+            data: depts,
+            error: false
+        });
+    }
+
     async updateDept(request, response) {
         //d
         const companyId = parseInt(request.user.id)
