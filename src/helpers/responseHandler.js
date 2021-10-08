@@ -54,6 +54,7 @@ const responseHandler = (req, res, statusCode, data, message) => {
       break
 
     default:
+      status = 'Unsuccessful'
       errMessage = message
       break
   }
