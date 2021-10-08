@@ -26,8 +26,9 @@ const Route = (app) => {
 
     app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
         res.send({
-            "message": "Login Successful",
-            "data": req.user
+            message: "Login Successful",
+            data: req.user,
+            error: false
         })
     });
 
