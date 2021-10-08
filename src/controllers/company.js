@@ -143,9 +143,16 @@ export default class CompanyController {
       })
 
       if (!user) {
-        return response.status(404).send({
-          message: 'User does not  exists',
-        })
+        return responseHandler(
+          request,
+          response,
+          404,
+          null,
+          'User does not exist.'
+        )
+        // return response.status(404).send({
+        //   message: 'User does not  exists',
+        // })
       }
 
       // Update user verification status to true
@@ -154,15 +161,19 @@ export default class CompanyController {
       const verified = await user.update({
         verified: true,
       })
-
-      response.status(200).send({
-        message: `${verified.email} is verified`,
+      return responseHandler(request, response, 200, {
+        message: `${verified.email} is verified.`,
         data: verified,
       })
+      /*  response.status(200).send({
+        message: `${verified.email} is verified`,
+        data: verified,
+      }) */
 
       //next()
     } catch (err) {
-      return response.status(500).send(err)
+      return responseHandler(request, response, 500, null, err)
+      // return response.status(500).send(err)
     }
   }
 
@@ -203,26 +214,44 @@ export default class CompanyController {
           .catch(error => {
             return error
           })
-
-        response.status(200).send({
+        return responseHandler(request, response, 200, {
+          message: `Successful!! ${company.companyName} has been updated`,
+          data: updatedDetails,
+        })
+        /*    response.status(200).send({
           message: `Successful!! ${company.companyName} has been updated`,
           data: updatedDetails,
           error: false,
-        })
+        }) */
       } else {
-        return response.status(400).json({
+        return responseHandler(
+          request,
+          response,
+          400,
+          null,
+          validate.errors.all()
+        )
+        /* return response.status(400).json({
           status: 'Unsuccessful',
           message: 'Invalid data input',
           error: true,
           errors: validate.errors.all(),
-        })
+        }) */
       }
     } else {
-      return response.status(404).json({
+      return responseHandler(
+        request,
+        response,
+        404,
+        null,
+        "This company isn't registered. Please register"
+      )
+      /* 
+      response.status(404).json({
         status: 'Unsuccessful',
         error: true,
         message: "This company isn't registered. Please register",
-      })
+      }) */
     }
   }
 
@@ -235,10 +264,11 @@ export default class CompanyController {
 
     if (company) {
       if (!request.body.depts) {
-        return response.status(404).json({
+        return responseHandler(request, response, 204)
+        /*     response.status(404).json({
           message: 'Empty data',
           error: true,
-        })
+        }) */
       } else {
         const depts = request.body.depts
         let addedDepts = []
@@ -268,19 +298,31 @@ export default class CompanyController {
             addedDepts.push(addedDept.deptName)
           }
         }
-        return response.status(201).send({
+        return responseHandler(request, response, 201, {
+          message: `${addedDepts.length} departments added`,
+          data: addedDepts,
+          existing,
+        })
+        /*  response.status(201).send({
           message: `${addedDepts.length} departments added`,
           data: addedDepts,
           existing,
           error: false,
-        })
+        }) */
       }
     } else {
-      return response.status(404).json({
+      return responseHandler(
+        request,
+        response,
+        404,
+        null,
+        "This company isn't registered. Please register"
+      )
+      /*   response.status(404).json({
         status: 'Unsuccessful',
         message: "This company isn't registered. Please register",
         error: true,
-      })
+      }) */
     }
   }
 
@@ -301,16 +343,27 @@ export default class CompanyController {
     })
 
     if (!dept) {
-      return response.status(404).json({
+      return responseHandler(
+        request,
+        response,
+        404,
+        null,
+        'This department has not been added'
+      )
+      /*  response.status(404).json({
         message: 'This department has not been added',
         error: true,
-      })
+      }) */
     }
-    response.status(200).json({
+    return responseHandler(request, response, 200, {
+      status: 'Successful',
+      data: dept,
+    })
+    /* response.status(200).json({
       status: 'Successful',
       data: dept,
       error: false,
-    })
+    }) */
   }
 
   async getAllDept(request, response) {
@@ -329,16 +382,27 @@ export default class CompanyController {
     })
 
     if (depts.length === 0) {
-      return response.status(200).json({
+      return responseHandler(
+        request,
+        response,
+        404,
+        null,
+        `No department has been added for company ${companyId}`
+      )
+      /*  response.status(200).json({
         message: `No department has been added for company ${companyId}`,
         error: true,
-      })
+      }) */
     }
-    response.status(200).json({
+    return responseHandler(request, response, 200, {
+      status: 'Successful',
+      data: depts,
+    })
+    /*  response.status(200).json({
       status: 'Successful',
       data: depts,
       error: false,
-    })
+    }) */
   }
 
   async updateDept(request, response) {
@@ -367,16 +431,27 @@ export default class CompanyController {
           return error
         })
 
-      response.status(200).send({
+      return responseHandler(request, response, 200, {
+        message: `Successful!! ${dept.deptName} has been updated`,
+        data: updatedDept,
+      })
+      /* response.status(200).send({
         message: `Successful!! ${dept.deptName} has been updated`,
         data: updatedDept,
         error: false,
-      })
+      }) */
     } else {
-      return response.status(404).json({
+      return responseHandler(
+        request,
+        response,
+        404,
+        null,
+        'This department does not exist'
+      )
+      /*  response.status(404).json({
         message: 'This department does not exist',
         error: true,
-      })
+      }) */
     }
   }
 }
