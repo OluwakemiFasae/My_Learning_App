@@ -1,21 +1,27 @@
-import UserController from "../controllers/users";
-import authorize from "../middlewares/authorize";
+import authorize from "../middlewares/authorize"
 
-const UserCon = new UserController()
+import resetEmail from "../controllers/user/resetEmail"
+import resetPassword from "../controllers/user/resetPassword"
+import login from "../controllers/user/login"
+import changePassword from "../controllers/user/changePassword"
+import getCurrentUser from "../controllers/user/getCurrentUser"
 
 const Route = (app) => {
 
-    //endpoint to create company account
-    app.post('/api/v1/user/login', UserCon.login);
+    //endpoint for users( employee or admin) to log in
+    app.post('/api/v1/user/login', login);
 
-    app.get('/api/v1/user/resetemail/', UserCon.resetEmail)
+    //endpoint to send email to user with reset password link
+    app.get('/api/v1/user/resetemail/', resetEmail)
 
-    app.put('/api/v1/user/resetpwd/:token', UserCon.resetPassword)
+    //endpoint to reset password before login
+    app.put('/api/v1/user/resetpwd/:token', resetPassword)
 
-    app.put('/api/v1/user/resetpwd/', authorize, UserCon.changePassword)
+    //endpoint to change password when logged in
+    app.put('/api/v1/user/resetpwd/', authorize, changePassword)
 
     //endpoint to get the current user logged in
-    app.get('/currentuser', authorize, UserCon.getCurrentUser)
+    app.get('/currentuser', authorize, getCurrentUser)
 
 }
 

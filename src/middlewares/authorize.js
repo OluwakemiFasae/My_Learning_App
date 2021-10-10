@@ -1,16 +1,22 @@
 import jwt from 'jsonwebtoken'
 
+import { responseHandler } from '../helpers/responseHandler'
 
 const authorize = (request, response, next) => {
     if (request.user){
         next()
     }else {
         if (!request.headers.authorization) {
-            response.status(401).send({
-              message: 'Please Log In',
-            });
+            responseHandler(
+              request,
+              response,
+              401,
+              null,
+              "Please log in"
+            )
             return false;
           }
+          
           const bearerHeader = request.headers.authorization;
           const parts = bearerHeader.split(' ');
           if (parts.length === 2) {
@@ -23,11 +29,13 @@ const authorize = (request, response, next) => {
               // verify token
               jwt.verify(request.token, process.env.JWT_SECRET, (error, decoded) => {
                 if (error) {
-                  return response.status(401)
-                    .send({
-                      status: 'Error',
-                      message: 'Invalid Token',
-                    });
+                  return responseHandler(
+                    request,
+                    response,
+                    401,
+                    null,
+                    "Token has expired"
+                  )
                 }
                 request.user = decoded;
                 next();

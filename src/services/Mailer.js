@@ -1,4 +1,3 @@
-//const sendgrid = require('@sendgrid/mail')
 import sendgrid, { mail } from 'sendgrid';
 const helper = mail;
 

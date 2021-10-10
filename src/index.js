@@ -9,6 +9,7 @@ require('./services/passport')
 import companyRoute from './routes/company';
 import userRoute from './routes/user';
 import employeeRoute from './routes/employee';
+import departmentRoute from './routes/department';
 
 //const cookieSession = require('cookie-session');
 const cors = require('cors')
@@ -31,6 +32,7 @@ app.use(express.urlencoded({
   extended: true
 }));
 
+//This must be modified after successful integration
 app.use(cors({
   origin: '*'
 }));
@@ -38,20 +40,9 @@ app.use(cors({
 // Log requests to the console.
 app.use(logger('dev'));
 
-app.use(cors({
-  origin: '*'
-}));
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-// app.use(
-//   cookieSession({
-//       maxAge: 30*24*60*60*1000,
-//       keys: ['cats']
-//   })
-// );
-
 
 
 
@@ -64,22 +55,19 @@ const port = process.env.PORT || 5000;
 companyRoute(app);
 userRoute(app);
 employeeRoute(app);
+departmentRoute(app);
 
-app.get('/', (req, res) => 
-    res.status(200).send({ message: 'Home Page' }))
 
-app.get('*', (request, response) => response.status(404).send({
-  message: 'INVALID ROUTE!!!.',
-}));
-app.post('*', (request, response) => response.status(404).send({
-  message: 'INVALID ROUTE!!!.',
-}));
-app.put('*', (request, response) => response.status(404).send({
-  message: 'INVALID ROUTE!!!.',
-}));
-app.delete('*', (request, response) => response.status(404).send({
-  message: 'INVALID ROUTE!!!.',
-}));
+app.get('/', (req, res) => responseHandler(request, response, 200, { message: 'Home Page' }))
+
+app.get('*', (request, response) => responseHandler(request, response, 404))
+
+app.post('*', (request, response) => responseHandler(request, response, 404))
+
+app.put('*', (request, response) => responseHandler(request, response, 404))
+
+app.delete('*', (request, response) => responseHandler(request, response, 404))
+
 
 app.listen(port, () => 
     console.log(`App is running and listening on port ${port}!`))
