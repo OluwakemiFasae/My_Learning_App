@@ -8,6 +8,18 @@
     let status = 'Success'
     let errMessage = message
     switch (statusCode) {
+      // Success
+      case 200:
+        error = false
+        errMessage = message || 'Success. '
+        break
+
+      // Resource created
+      case 201:
+        error = false
+        errMessage = message || 'Created Successfully. '
+        break
+      
       // No Content
       case 204:
         error = true
@@ -59,7 +71,9 @@
         errMessage = message || 'Internal server error'
         break
     }
+
     const response = data || {}
+    
     if (error) {
       response.error = true
       response.status = 'Unsuccessful'
