@@ -11,6 +11,8 @@ import userRoute from './routes/user';
 import employeeRoute from './routes/employee';
 import departmentRoute from './routes/department';
 
+import { responseHandler } from './helpers/responseHandler';
+
 //const cookieSession = require('cookie-session');
 const cors = require('cors')
 
@@ -58,7 +60,7 @@ employeeRoute(app);
 departmentRoute(app);
 
 
-app.get('/', (req, res) => responseHandler(request, response, 200, { message: 'Home Page' }))
+app.get('/', (request, response) => responseHandler(request, response, 200, { message: 'Home Page' }))
 
 app.get('*', (request, response) => responseHandler(request, response, 404))
 

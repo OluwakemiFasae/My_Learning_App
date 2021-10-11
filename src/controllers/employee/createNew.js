@@ -7,8 +7,10 @@ const Company = require('../../models').Company
 
 import { saltRounds } from '../../helpers/constants'
 import { employeeRules } from '../../helpers/validatorRules'
+import { sendEmail } from '../../helpers/sendEmail'
 
 import { responseHandler } from '../../helpers/responseHandler'
+import { userDetailTemplate } from '../../services/Templates/userDetails'
 
 const createNew = async (request, response) => {
 
@@ -40,7 +42,6 @@ const createNew = async (request, response) => {
                 },
             })
 
-            console.log(empl)
 
             if (empl) {
                 existing.push(empl.dataValues.email)
@@ -72,6 +73,8 @@ const createNew = async (request, response) => {
 
                 addedEmployee.dataValues.unhashedpassword = password;
 
+
+
                 addedEmployees.push(addedEmployee.dataValues);
             }else {
                 return responseHandler(
@@ -83,6 +86,12 @@ const createNew = async (request, response) => {
                 )
             }
         }
+                try{
+                    sendEmail(addedEmployees, userDetailTemplate)
+                }catch(err){
+                    return(err)
+                }
+                
 
                 return responseHandler(
                     request,
