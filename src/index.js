@@ -10,6 +10,7 @@ import companyRoute from './routes/company';
 import userRoute from './routes/user';
 import employeeRoute from './routes/employee';
 import departmentRoute from './routes/department';
+import trainingRoute from './routes/training'
 
 //const cookieSession = require('cookie-session');
 const cors = require('cors')
@@ -22,7 +23,7 @@ const app = express()
 
 app.use(cookieSession({
   name: 'google-auth-session',
-  maxAge: 24*60*60*1000,
+  maxAge: 24 * 60 * 60 * 1000,
   keys: [process.env.COOKIE_KEY]
 }))
 
@@ -50,12 +51,11 @@ app.use(passport.session());
 const port = process.env.PORT || 5000;
 
 
-
-
 companyRoute(app);
 userRoute(app);
 employeeRoute(app);
 departmentRoute(app);
+trainingRoute(app)
 
 
 app.get('/', (req, res) => responseHandler(request, response, 200, { message: 'Home Page' }))
@@ -69,5 +69,5 @@ app.put('*', (request, response) => responseHandler(request, response, 404))
 app.delete('*', (request, response) => responseHandler(request, response, 404))
 
 
-app.listen(port, () => 
-    console.log(`App is running and listening on port ${port}!`))
+app.listen(port, () =>
+  console.log(`App is running and listening on port ${ port }!`))
