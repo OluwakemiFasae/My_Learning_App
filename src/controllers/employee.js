@@ -29,11 +29,6 @@ export default class EmployeeController {
       const { employees } = request.body
       if (!employees) {
         return responseHandler(request, response, 422)
-        /*    response.status(404).json({
-                    status: 'Unsuccessful',
-                    message: 'Invalid Input',
-                    error: true
-                }); */
       }
 
       //console.log((request.body.employees).length)
@@ -79,12 +74,6 @@ export default class EmployeeController {
             null,
             validate.errors.all()
           )
-          /*   response.status(400).json({
-            status: 'Unsuccessful',
-            message: 'Invalid data input',
-            error: true,
-            errors: validate.errors.all(),
-          }) */
         }
 
         addedEmployee.dataValues.unhashedpassword = password

@@ -10,6 +10,7 @@ require('./services/passport')
 import companyRoute from './routes/company'
 import userRoute from './routes/user'
 import employeeRoute from './routes/employee'
+import trainingRoute from './routes/training'
 
 //const cookieSession = require('cookie-session');
 const cors = require('cors')
@@ -60,6 +61,7 @@ const port = process.env.PORT || 5000
 companyRoute(app)
 userRoute(app)
 employeeRoute(app)
+trainingRoute(app)
 
 app.get('/', (request, response) => {
   return responseHandler(request, response, 200, { message: 'Home Page' })

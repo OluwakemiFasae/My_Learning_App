@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       companyId: DataTypes.INTEGER,
       topic: DataTypes.STRING,
       description: DataTypes.STRING,
-      startDate: DataTypes.DATE,
+      startDate: { type: DataTypes.DATE, defaultValue: new Date() },
       endDate: DataTypes.DATE,
       unitCost: DataTypes.STRING,
       location: DataTypes.STRING,

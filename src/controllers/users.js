@@ -51,10 +51,6 @@ export default class UserController {
           user.dataValues.admin = 'false'
         } else {
           return responseHandler(request, response, 404, null, 'User not found')
-          /* 	response.status(404).json({
-						status: 'Unsuccessful',
-						message: 'User not found',
-					}); */
         }
       }
 
@@ -66,9 +62,6 @@ export default class UserController {
           null,
           'Please verify your Account.'
         )
-        /*  response.status(403).send({
-          message: 'Please verify your Account.',
-        }) */
       }
       bcrypt.compare(
         request.body.password,
@@ -82,9 +75,6 @@ export default class UserController {
               null,
               'Invalid Credentials'
             )
-            /*   response.status(401).send({
-					message: 'Wrong Password',
-				  }) */
           }
           const token = jwt.sign(
             { id: user.dataValues.id, email: user.dataValues.email },
@@ -97,12 +87,6 @@ export default class UserController {
             data: user,
             token,
           })
-          /* response.status(200).send({
-			  message: 'login successful',
-			  user,
-			  token,
-			})
-		   */
         }
       )
     } else {
@@ -113,16 +97,11 @@ export default class UserController {
         null,
         validate.errors.all()
       )
-      /* response.status(400).json({
-        status: 'Unsuccessful',
-        message: 'Invalid data input',
-        errors: validate.errors.all(),
-      }) */
     }
   }
 
   getCurrentUser(request, response) {
-    return response.send(request.user)
+    return responseHandler(request, response, 200, request.user)
   }
 
   async resetEmail(request, response) {
