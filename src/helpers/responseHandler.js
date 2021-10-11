@@ -4,20 +4,20 @@
  */
 
  const responseHandler = (req, res, statusCode, data, message) => {
-    let error = false
-    let status = 'Success'
-    let errMessage = message
+    let error
+    let errMessage
+
     switch (statusCode) {
       // Success
       case 200:
         error = false
-        errMessage = message || 'Success. '
+        errMessage = data.message || 'Success. '
         break
 
       // Resource created
       case 201:
         error = false
-        errMessage = message || 'Created Successfully. '
+        errMessage = data.message || 'Created Successfully. '
         break
       
       // No Content
@@ -29,21 +29,18 @@
       //Bad Request
       case 400:
         error = true
-        status = 'Unsuccessful'
         errMessage = message || 'Invalid Request '
         break
   
       // Unauthorized
       case 401:
         error = true
-        status = 'Unsuccessful'
         errMessage = message || 'Unauthorized Request '
         break
   
       // Forbidden
       case 403:
         error = true
-        status = 'Unsuccessful'
         errMessage = message || 'Access to this recource is denied!'
         break
   
@@ -56,29 +53,26 @@
       //   Cannot process request
       case 422:
         error = true
-        status = 'Unsuccessful'
         errMessage = message || 'Invalid Request '
         break
   
-      // Inernal Server Error
+      // Internal Server Error
       case 500:
         error = true
         errMessage = message || 'Internal server error'
         break
   
       default:
-        status = 'Unsuccessful'
+        error = true
         errMessage = message || 'Internal server error'
         break
     }
 
     const response = data || {}
+
+    response.error = error
+    response.message = errMessage
     
-    if (error) {
-      response.error = true
-      response.status = 'Unsuccessful'
-      response.message = errMessage
-    }
     return res.status(statusCode).json(response)
   }
   
