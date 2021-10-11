@@ -36,6 +36,7 @@ const login = async (request, response) => {
         if (user) {
             user.dataValues.admin = 'true'
         } else {
+            try{
             user = await Employee.findOne({
                 where: {
                     email
@@ -44,10 +45,7 @@ const login = async (request, response) => {
                 return error 
             })
 
-            if (user) {
-                user.dataValues.admin = 'false'
-            }
-            else {
+            if (!user) {
                 return responseHandler(
                     request, 
                     response, 
@@ -55,6 +53,14 @@ const login = async (request, response) => {
                     null, 
                     'User not found')
             }
+            else {
+                    user.dataValues.admin = 'false'
+                }
+            }catch(err){
+                console.log(err)
+                return err
+            }
+
         }
 
         if (!user.verified) {
