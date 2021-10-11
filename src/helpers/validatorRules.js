@@ -31,7 +31,7 @@ const updateRules = {
     country: 'required'
 }
 
-const trainigRules = {
+const trainingRules = {
     companyId: 'required',
     topic: 'required',
     description: 'required',
@@ -39,5 +39,11 @@ const trainigRules = {
     location: 'required',
     status: 'required',
 }
-
-export { loginRules, resetRules, employeeRules, companyRules, updateRules, trainigRules }
+const updateTrainingRules = {
+    topic: 'required',
+    description: 'required',
+    unitCost: 'required',
+    location: 'required',
+    status: 'required',
+}
+export { loginRules, resetRules, employeeRules, companyRules, updateRules, trainingRules, updateTrainingRules }
