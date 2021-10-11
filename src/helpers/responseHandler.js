@@ -31,7 +31,7 @@
       // Unauthorized
       case 401:
         error = true
-        msg = data.message || 'Unauthorized Request '
+        msg = message || 'Unauthorized Request '
         break
   
       // Forbidden
