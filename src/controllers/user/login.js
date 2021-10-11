@@ -75,8 +75,9 @@ const login = async (request, response) => {
                         request,
                         response,
                         401,
-                        null,
-                        'Invalid Credentials'
+                        {
+                            message: 'Invalid credentials'
+                        }
                       )
                 }
                 const token = jwt.sign(
