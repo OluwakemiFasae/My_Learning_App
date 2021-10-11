@@ -1,10 +1,10 @@
 const loginRules = {
-	email: 'required|email',
-	password: 'required',
+    email: 'required|email',
+    password: 'required',
 };
 
 const resetRules = {
-	email: 'required|email'
+    email: 'required|email'
 };
 
 const employeeRules = {
@@ -31,5 +31,13 @@ const updateRules = {
     country: 'required'
 }
 
+const trainigRules = {
+    companyId: 'required',
+    topic: 'required',
+    description: 'required',
+    unitCost: 'required',
+    location: 'required',
+    status: 'required',
+}
 
-export { loginRules, resetRules, employeeRules, companyRules, updateRules }
+export { loginRules, resetRules, employeeRules, companyRules, updateRules, trainigRules }

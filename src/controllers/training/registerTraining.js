@@ -2,22 +2,15 @@ import Validator from 'validatorjs'
 const Training = require('../../models').Training
 const Company = require('../../models').Company
 
+import { trainigRules } from '../../helpers/validatorRules'
 import { responseHandler } from '../../helpers/responseHandler'
 
-const trainigRules = {
-    companyId: 'required',
-    topic: 'required',
-    description: 'required',
-    unitCost: 'required',
-    location: 'required',
-    status: 'required',
-}
 export default class TrainingController {
     async createNewTraining(request, response) {
         const authCompanyId = request.user.id
 
         const validateCompany = await Company.findOne({
-            companyId: authCompanyId,
+            companyId: authCompanyId
         })
 
         if (validateCompany) {
@@ -59,9 +52,16 @@ export default class TrainingController {
                     validateData.errors.all()
                 )
             }
-
+            const training = await Training.findOne({
+                where: {
+                    companyId: authCompanyId
+                }
+                , attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                }
+            })
             return responseHandler(request, response, 201, {
-                data: createTraining,
+                data: training,
             })
         } else {
             return responseHandler(request, response, 401)
