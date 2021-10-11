@@ -40,12 +40,17 @@ const login = async (request, response) => {
             user = await Employee.findOne({
                 where: {
                     email
-                }
+                },attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                },
             }).catch(error => { 
                 return error 
             })
 
+            console.log(user)
+
             if (!user) {
+                console.log('I should get here')
                 return responseHandler(
                     request, 
                     response, 
@@ -54,6 +59,7 @@ const login = async (request, response) => {
                     'User not found')
             }
             else {
+                console.log('I should not get here')
                     user.dataValues.admin = 'false'
                 }
             }catch(err){
