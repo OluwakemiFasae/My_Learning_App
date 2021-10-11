@@ -93,7 +93,6 @@ const resetPassword = async(request, response) => {
                 200, 
                 {
                     message: `Successful!! Your password has been changed`,
-                    data: newUpdate.dataValues.password,
                 }
             )
         })

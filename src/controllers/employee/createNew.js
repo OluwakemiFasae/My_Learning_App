@@ -35,7 +35,9 @@ const createNew = async (request, response) => {
                 where: {
                     email: employee.email,
                 },
-
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                },
             })
 
             console.log(empl)

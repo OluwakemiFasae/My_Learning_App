@@ -13,7 +13,11 @@ const resetEmployee = async (request, response) => {
     const empId = parseInt(request.params.empId)
 
 
-    const empl = await Employee.findByPk(empId).catch(error => { 
+    const empl = await Employee.findByPk(empId,{
+        attributes: {
+            exclude: ['createdAt', 'updatedAt']
+        },
+    }).catch(error => { 
         return error 
     });
 

@@ -25,7 +25,10 @@ const login = async (request, response) => {
             .findOne({
                 where: {
                     email
-                }
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                },
             }).catch(error => { 
                 return error 
             })

@@ -24,7 +24,10 @@ const resetPwdTemplate = require('../../services/Templates/resetPwdTemplate').de
             .findOne({
                 where: {
                     email
-                }
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                },
             }).catch(error => { 
                 return error 
             })
