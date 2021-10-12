@@ -56,11 +56,9 @@ const login = async (request, response) => {
                     'User not found')
             }
             else {
-                console.log('I should not get here')
                     user.dataValues.admin = 'false'
                 }
             }catch(err){
-                console.log(err)
                 return err
             }
 
@@ -84,9 +82,8 @@ const login = async (request, response) => {
                         request,
                         response,
                         401,
-                        {
-                            message: 'Invalid credentials'
-                        }
+                        null,
+                        'Invalid credentials'
                       )
                 }
                 const token = jwt.sign(
