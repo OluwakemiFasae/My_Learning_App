@@ -47,10 +47,7 @@ const login = async (request, response) => {
                 return error 
             })
 
-            console.log(user)
-
             if (!user) {
-                console.log('I should get here')
                 return responseHandler(
                     request, 
                     response, 
