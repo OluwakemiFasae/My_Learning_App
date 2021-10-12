@@ -29,7 +29,7 @@ const updateTraining = async (request, response) => {
         let validate = new Validator(request.body, updateTrainingRules)
 
         if (validate.passes()) {
-            training.changed('updatedAt', true) //change updated tome
+            training.changed('updatedAt', true) //change updated time
             const updateTraining = await training.update({
                 topic: topic || training.topic,
                 description: description || training.description,
