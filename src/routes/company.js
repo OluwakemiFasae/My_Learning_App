@@ -1,6 +1,7 @@
 import passport from "passport"
 
-import authorize from '../middlewares/authorize' 
+import authorize from '../middlewares/authorize'
+import isAdmin from "../helpers/isAdmin"
 
 import createAccount from '../controllers/company/createAccount'
 import verify from '../controllers/company/verifyEmail'
@@ -16,7 +17,7 @@ const Route = (app) => {
     app.get('/api/v1/company/verify/:token', verify);
     
     //endpoint to update company details
-    app.put('/api/v1/company/config/', authorize, updateAccount);
+    app.put('/api/v1/company/config/', authorize, isAdmin, updateAccount);
 
     //endpoint to create admin account with google auth
     app.get('/auth/google', passport.authenticate('google', {

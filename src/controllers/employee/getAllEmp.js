@@ -31,9 +31,10 @@ const getAll = async (request, response) => {
         return responseHandler(
             request,
             response,
-            404,
-            null,
-            `No employee has been added for this company`
+            200,
+            {
+                message: 'No employee has been added for this company',
+            }
           )
     }
     return responseHandler(
@@ -41,7 +42,7 @@ const getAll = async (request, response) => {
         response, 
         200, 
         {
-            status: 'Successful',
+            message: 'Successful',
             data: empls,
         }
     )
