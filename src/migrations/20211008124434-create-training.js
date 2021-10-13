@@ -8,7 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      companyId: { type: Sequelize.INTEGER },
+      companyId: { type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Companies',
+            schema: 'schema'
+          },
+          key: 'id'
+        },
+        allowNull: false 
+      },
       topic: { type: Sequelize.STRING },
       description: { type: Sequelize.STRING },
       startDate: { type: Sequelize.DATE },
