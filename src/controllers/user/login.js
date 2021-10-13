@@ -64,15 +64,6 @@ const login = async (request, response) => {
 
         }
 
-        if (!user.verified) {
-            return responseHandler(
-                request,
-                response,
-                403,
-                null,
-                'Please verify your Account.'
-            )
-        }
         bcrypt.compare(
             request.body.password,
             user.dataValues.password,
@@ -86,6 +77,8 @@ const login = async (request, response) => {
                         'Invalid credentials'
                     )
                 }
+
+
                 const token = jwt.sign(
                     { id: user.dataValues.id, email: user.dataValues.email, admin: user.dataValues.admin },
                     process.env.JWT_SECRET, { expiresIn: "3d" });
@@ -101,6 +94,15 @@ const login = async (request, response) => {
                     }
                 )
             })
+            if (!user.verified) {
+            return responseHandler(
+                request,
+                response,
+                403,
+                null,
+                'Please verify your Account.'
+            )
+        }
     }
     else {
         return responseHandler(

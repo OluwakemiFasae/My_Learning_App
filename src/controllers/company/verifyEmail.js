@@ -47,12 +47,17 @@ const verify = async (request, response) => {
             )
         }
 
-        // Update user verification status to true
-        // user.verified = true;
-
+        
         const verified = await user.update({
             verified: true
         })
+
+        // Update user admin status to true
+        verified.dataValues.admin = true;
+
+        const token = jwt.sign(
+            { id: verified.dataValues.id, email: verified.dataValues.email, admin: verified.dataValues.admin },
+            process.env.JWT_SECRET, { expiresIn: "3d" });
 
         return responseHandler(
             request,
@@ -60,7 +65,7 @@ const verify = async (request, response) => {
             200,
             {
                 message: `${ verified.email } is verified.`,
-                data: verified,
+                data: verified, token
             }
         )
 
