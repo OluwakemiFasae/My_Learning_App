@@ -7,8 +7,8 @@ const Company = require('../../models').Company;
 import { responseHandler } from '../../helpers/responseHandler';
 
 
- const verify= async (request, response) => {
-    
+const verify = async (request, response) => {
+
     const { token } = request.params
 
     // Check we have an id
@@ -32,7 +32,9 @@ import { responseHandler } from '../../helpers/responseHandler';
         const user = await Company.findOne({
             where: {
                 email: payload.email,
-            }
+
+            },
+            attributes: ['id', 'companyName', 'email']
         })
 
         if (!user) {
@@ -42,22 +44,22 @@ import { responseHandler } from '../../helpers/responseHandler';
                 404,
                 null,
                 'User does not exist.'
-              )
+            )
         }
 
         // Update user verification status to true
-        user.verified = true;
+        // user.verified = true;
 
         const verified = await user.update({
             verified: true
         })
 
         return responseHandler(
-            request, 
-            response, 
-            200, 
+            request,
+            response,
+            200,
             {
-                message: `${verified.email} is verified.`,
+                message: `${ verified.email } is verified.`,
                 data: verified,
             }
         )

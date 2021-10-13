@@ -11,11 +11,11 @@ import updateAccount from '../controllers/company/updateAccount'
 
 const Route = (app) => {
     //endpoint to create company account
-    app.post('/api/v1/admin/create', createAccount);
+    app.post('/api/v1/company/create', createAccount);
 
     //endpoint to verify email address
     app.get('/api/v1/company/verify/:token', verify);
-    
+
     //endpoint to update company details
     app.put('/api/v1/company/config/', authorize, isAdmin, updateAccount);
 

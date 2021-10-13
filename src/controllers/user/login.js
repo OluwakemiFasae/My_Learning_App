@@ -1,7 +1,7 @@
 import Validator from 'validatorjs'
 import jwt from 'jsonwebtoken'
 
-import { loginRules }  from '../../helpers/validatorRules'
+import { loginRules } from '../../helpers/validatorRules'
 
 import { responseHandler } from '../../helpers/responseHandler'
 
@@ -29,36 +29,36 @@ const login = async (request, response) => {
                 attributes: {
                     exclude: ['createdAt', 'updatedAt']
                 },
-            }).catch(error => { 
-                return error 
+            }).catch(error => {
+                return error
             })
 
         if (user) {
             user.dataValues.admin = 'true'
         } else {
-            try{
-            user = await Employee.findOne({
-                where: {
-                    email
-                },attributes: {
-                    exclude: ['createdAt', 'updatedAt']
-                },
-            }).catch(error => { 
-                return error 
-            })
+            try {
+                user = await Employee.findOne({
+                    where: {
+                        email
+                    }, attributes: {
+                        exclude: ['createdAt', 'updatedAt']
+                    },
+                }).catch(error => {
+                    return error
+                })
 
-            if (!user) {
-                return responseHandler(
-                    request, 
-                    response, 
-                    404, 
-                    null, 
-                    'User not found')
-            }
-            else {
+                if (!user) {
+                    return responseHandler(
+                        request,
+                        response,
+                        404,
+                        null,
+                        'User not found')
+                }
+                else {
                     user.dataValues.admin = 'false'
                 }
-            }catch(err){
+            } catch (err) {
                 return err
             }
 
@@ -71,7 +71,7 @@ const login = async (request, response) => {
                 403,
                 null,
                 'Please verify your Account.'
-              )
+            )
         }
         bcrypt.compare(
             request.body.password,
@@ -84,16 +84,16 @@ const login = async (request, response) => {
                         401,
                         null,
                         'Invalid credentials'
-                      )
+                    )
                 }
                 const token = jwt.sign(
-                    { id: user.dataValues.id, email: user.dataValues.email },
+                    { id: user.dataValues.id, email: user.dataValues.email, admin: user.dataValues.admin },
                     process.env.JWT_SECRET, { expiresIn: "3d" });
                 delete user.dataValues.password;
                 return responseHandler(
-                    request, 
-                    response, 
-                    200, 
+                    request,
+                    response,
+                    200,
                     {
                         message: 'Login Successful.',
                         data: user,
@@ -109,7 +109,7 @@ const login = async (request, response) => {
             400,
             null,
             validate.errors.all()
-          )
+        )
     }
 }
 

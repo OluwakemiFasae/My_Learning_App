@@ -29,8 +29,8 @@ const createAccount = async (request, response) => {
             where: {
                 email: companyEmail
             },
-        }).catch(error => { 
-            return error 
+        }).catch(error => {
+            return error
         })
 
 
@@ -43,58 +43,57 @@ const createAccount = async (request, response) => {
                             companyName,
                             email: companyEmail,
                             password: hash
-                        }).catch(error => { 
-                            return error 
+                        }).catch(error => {
+                            return error
                         })
 
-                    if(newCompany){
+                    if (newCompany) {
                         const vToken = jwt.sign(
-                        { 
-                            id: newCompany.id, 
-                            email: newCompany.email 
-                        },
-                        process.env.VERIFICATION_TOKEN,
-                        { expiresIn: "7d" }
-                    );
+                            {
+                                id: newCompany.id,
+                                email: newCompany.email
+                            },
+                            process.env.VERIFICATION_TOKEN,
+                            { expiresIn: "7d" }
+                        );
 
-                    const content = `api/v1/company/verify/${vToken}`
-                    
-                    const recipients = newCompany.email
+                        const content = `api/v1/company/verify/${ vToken }`
 
-                    //send email here
-                    const newMail = {
-                        subject: 'Verify Account',
-                        recipients: recipients.split(',').map(email => ({ email: email.trim() })),
-                        body: content
-                    }
+                        const recipients = newCompany.email
 
-                    const mailer = new Mailer(newMail, verifyTemplate(newMail));
-
-                    try {
-                        await mailer.send();
-                    } catch (err) {
-                        return responseHandler(request, response, 422, null, err)
-                    }
-
-                    return responseHandler(
-                        request, 
-                        response, 
-                        201, 
-                        {
-                            message: `Account created Successfully!! A verification email has been sent to ${newCompany.email}`,
-                            data: newCompany,
-                            vToken,
+                        //send email here
+                        const newMail = {
+                            subject: 'Verify Account',
+                            recipients: recipients.split(',').map(email => ({ email: email.trim() })),
+                            body: content
                         }
-                    )
-                }  else {
-                    return responseHandler(
-                      request,
-                      response,
-                      400,
-                      null,
-                      'Company wasn\'t created successfully'
-                    )
-                  }
+
+                        const mailer = new Mailer(newMail, verifyTemplate(newMail));
+
+                        try {
+                            await mailer.send();
+                        } catch (err) {
+                            return responseHandler(request, response, 422, null, err)
+                        }
+
+                        return responseHandler(
+                            request,
+                            response,
+                            201,
+                            {
+                                message: `Account created Successfully!! A verification email has been sent to ${ newCompany.email }`,
+                                vToken,
+                            }
+                        )
+                    } else {
+                        return responseHandler(
+                            request,
+                            response,
+                            400,
+                            null,
+                            'Company wasn\'t created successfully'
+                        )
+                    }
 
                 })
             } catch (error) {
@@ -102,18 +101,18 @@ const createAccount = async (request, response) => {
             }
         } else {
             return responseHandler(
-              request,
-              response,
-              400,
-              null,
-              'Company already exists'
+                request,
+                response,
+                400,
+                null,
+                'Company already exists'
             )
-          }
+        }
     }
     else {
         return responseHandler(request, response, 422, null, {
             ...validate.errors.all(),
-          })
+        })
     }
 }
 
