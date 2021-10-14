@@ -9,7 +9,14 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       companyId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Companies',
+          },
+          key: 'id'
+        },
+        allowNull: false
       },
       deptName: {
         type: Sequelize.STRING

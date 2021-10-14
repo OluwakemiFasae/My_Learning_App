@@ -10,14 +10,23 @@ module.exports = {
       },
       empId: {
         type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Employees',
+          },
+          key: 'id'
+        },
+        allowNull: false
       },
       trainingId: {
         type: Sequelize.INTEGER,
         references: {
           model: {
-            tableName: 'Trainings'
-          }, key: 'id'
-        }
+            tableName: 'Trainings',
+          },
+          key: 'id'
+        },
+        allowNull: false
       },
       appliedDate: {
         type: Sequelize.DATE,

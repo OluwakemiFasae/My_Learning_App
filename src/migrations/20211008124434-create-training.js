@@ -8,7 +8,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      companyId: { type: Sequelize.INTEGER },
+      companyId: { type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Companies',
+          },
+          key: 'id'
+        },
+        allowNull: false 
+      },
       topic: { type: Sequelize.STRING },
       description: { type: Sequelize.STRING },
       startDate: { type: Sequelize.DATE },
@@ -19,11 +27,11 @@ module.exports = {
       status: { type: Sequelize.STRING },
 
       createdAt: {
-        allowNull: false,
+        defaultValue: Date.now(),
         type: Sequelize.DATE,
       },
       updatedAt: {
-        allowNull: false,
+        defaultValue: Date.now(),
         type: Sequelize.DATE,
       },
     })

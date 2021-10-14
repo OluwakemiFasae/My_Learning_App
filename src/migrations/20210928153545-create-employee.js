@@ -27,17 +27,24 @@ module.exports = {
         type: Sequelize.STRING
       },
       deptId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Departments',
+          },
+          key: 'id'
+        },
+        allowNull: false
       },
       jobtitle: {
         type: Sequelize.STRING
       },
       createdAt: {
-        allowNull: false,
+        defaultValue: Sequelize.DATE.now(),
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        defaultValue: Date.now(),
         type: Sequelize.DATE
       }
     });

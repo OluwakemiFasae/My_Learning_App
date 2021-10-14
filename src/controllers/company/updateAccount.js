@@ -1,5 +1,7 @@
 import Validator from 'validatorjs';
 
+import { updateRules } from '../../helpers/validatorRules'
+
 require('dotenv').config();
 const Company = require('../../models').Company;
 

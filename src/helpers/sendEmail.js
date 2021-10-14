@@ -23,7 +23,6 @@ const sendEmail = async (employees, template) => {
         const mailer = new Mailer(newMail, template(newMail));
         try {
             await mailer.send();
-            console.log(`email sent to ${employee.email}`)
         } catch(err) {
             return responseHandler(
                 request,

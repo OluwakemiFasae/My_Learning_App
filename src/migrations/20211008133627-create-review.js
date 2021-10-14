@@ -11,8 +11,24 @@ module.exports = {
       body: {
         type: Sequelize.STRING,
       },
-      empId: { type: Sequelize.INTEGER },
-      trainingId: { type: Sequelize.INTEGER },
+      empId: { type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Employees',
+          },
+          key: 'id'
+        },
+        allowNull: false 
+      },
+      trainingId: { type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Trainings',
+          },
+          key: 'id'
+        },
+        allowNull: false 
+      },
 
       createdAt: {
         allowNull: false,
