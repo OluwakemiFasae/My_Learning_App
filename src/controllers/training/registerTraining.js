@@ -7,7 +7,7 @@ import { responseHandler } from '../../helpers/responseHandler'
 
 const createNewTraining = async (request, response) => {
     const authCompanyId = parseInt(request.user.id)
-
+    console.log(request.user)
     const validateCompany = await Company.findOne({
         companyId: authCompanyId
     })

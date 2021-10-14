@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
       Training.belongsTo(models.Company, {
         foreignKey: 'companyId',
         onDelete: 'CASCADE',
-      })
+      }),
+        Training.hasMany(models.Training_Application, {
+          foreignKey: 'trainingId'
+        })
     }
   }
   Training.init(

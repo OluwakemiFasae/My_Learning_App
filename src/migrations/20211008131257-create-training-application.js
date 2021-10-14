@@ -13,6 +13,11 @@ module.exports = {
       },
       trainingId: {
         type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'Trainings'
+          }, key: 'id'
+        }
       },
       appliedDate: {
         type: Sequelize.DATE,

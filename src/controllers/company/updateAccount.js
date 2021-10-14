@@ -5,16 +5,16 @@ const Company = require('../../models').Company;
 
 import { responseHandler } from '../../helpers/responseHandler';
 
- 
- const updateAccount = async (request, response) => {
-    
+
+const updateAccount = async (request, response) => {
+
     const companyId = parseInt(request.user.id)
     const company = await Company.findByPk(companyId, {
         attributes: {
             exclude: ['createdAt', 'updatedAt']
         }
-    }).catch(error => { 
-        return error 
+    }).catch(error => {
+        return error
     })
 
     if (company) {
@@ -32,16 +32,16 @@ import { responseHandler } from '../../helpers/responseHandler';
                 employeeSize: employeeSize || company.employeeSize,
                 state: state || company.state,
                 country: country || company.country
-            }).catch(error => { 
-                return error 
+            }).catch(error => {
+                return error
             })
 
             return responseHandler(
-                request, 
-                response, 
-                200, 
+                request,
+                response,
+                200,
                 {
-                    message: `Successful!! ${company.companyName} has been updated`,
+                    message: `Successful!! ${ company.companyName } has been updated`,
                     data: updatedDetails,
                 }
             )
@@ -52,7 +52,7 @@ import { responseHandler } from '../../helpers/responseHandler';
                 400,
                 null,
                 validate.errors.all()
-              )
+            )
         }
     }
     else {
@@ -62,7 +62,7 @@ import { responseHandler } from '../../helpers/responseHandler';
             404,
             null,
             "This company isn't registered. Please register"
-          )
+        )
     }
 }
 

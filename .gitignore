@@ -8,6 +8,7 @@ lerna-debug.log*
 .vscode
 20210922110549-create-admin.js
 .DS_Store
+note.*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

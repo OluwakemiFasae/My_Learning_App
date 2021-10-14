@@ -4,6 +4,7 @@ import authorize from '../middlewares/authorize'
 import isAdmin from '../helpers/isAdmin'
 import deleteTraining from '../controllers/training/deleteTraining'
 import getAllTraining from '../controllers/training/getAllTraining'
+import getOneTraining from '../controllers/training/getOneTraining'
 
 const Route = app => {
     //create new training 
@@ -17,6 +18,8 @@ const Route = app => {
     app.delete('/api/v1/training/:id', authorize, isAdmin, deleteTraining)
 
     app.get('/api/v1/trainings', authorize, getAllTraining)
+    // Get Single Training
+    app.get('/api/v1/training/:id', authorize, isAdmin, getOneTraining)
 }
 
 export default Route
