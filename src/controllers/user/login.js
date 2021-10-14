@@ -34,7 +34,7 @@ const login = async (request, response) => {
             })
 
         if (user) {
-            user.dataValues.admin = 'true'
+            user.dataValues.admin = true
         } else {
             try {
                 user = await Employee.findOne({
@@ -56,7 +56,7 @@ const login = async (request, response) => {
                         'User not found')
                 }
                 else {
-                    user.dataValues.admin = 'false'
+                    user.dataValues.admin = false
                 }
             } catch (err) {
                 return err

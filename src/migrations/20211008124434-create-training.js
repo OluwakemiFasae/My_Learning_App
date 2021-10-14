@@ -12,7 +12,6 @@ module.exports = {
         references: {
           model: {
             tableName: 'Companies',
-            schema: 'schema'
           },
           key: 'id'
         },
@@ -28,11 +27,11 @@ module.exports = {
       status: { type: Sequelize.STRING },
 
       createdAt: {
-        allowNull: false,
+        defaultValue: Date.now(),
         type: Sequelize.DATE,
       },
       updatedAt: {
-        allowNull: false,
+        defaultValue: Date.now(),
         type: Sequelize.DATE,
       },
     })

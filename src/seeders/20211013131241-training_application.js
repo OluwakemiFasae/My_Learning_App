@@ -1,24 +1,13 @@
 'use strict';
 
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
-  },
+const applications = require ('../mockdata/training_application_data.json')
 
-  down: async (queryInterface, Sequelize) => {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+module.exports = {
+  up: (queryInterface, Sequelize) => {
+    
+    return queryInterface.bulkInsert('Training_Applications', applications);
+  },
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('Training_Applications', null, {});
   }
 };

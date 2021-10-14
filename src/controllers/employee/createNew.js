@@ -71,9 +71,8 @@ const createNew = async (request, response) => {
                     return error
                 });
 
+
                 addedEmployee.dataValues.unhashedpassword = password;
-
-
 
                 addedEmployees.push(addedEmployee.dataValues);
             }else {
@@ -98,8 +97,7 @@ const createNew = async (request, response) => {
                     response,
                     201,
                     {
-                        message: `Successful!! ${addedEmployees.length} employees added`,
-                        data: addedEmployees, existing,
+                        message: `Successful!! ${addedEmployees.length} new employees added, ${existing} are exisiting`
                     }
                 )
              
